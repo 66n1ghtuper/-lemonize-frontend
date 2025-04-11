@@ -1,24 +1,61 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import PersonalCabinet from './PersonalCabinet';
+import Dashboard from './Dashboard';
+import CreateCompany from './CreateCompany';
+import Settings from './Settings';
+import CampaignActions from './CampaignActions';
+import Payments from './Payments';
+import Registration from './Registration';
+import { useEffect, useState } from 'react';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userName, setUserName] = useState('Пользователь');
+
+  useEffect(() => {
+    const auth = localStorage.getItem('isAuthenticated') === 'true';
+    const name = localStorage.getItem('userName') || 'Пользователь';
+    setIsAuthenticated(auth);
+    setUserName(name);
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <Router>
+      <Routes>
+        <Route 
+          path="/login" 
+          element={
+            isAuthenticated ? 
+              <Navigate to="/dashboard" /> : 
+              <Registration 
+                onLoginSuccess={() => {
+                  setIsAuthenticated(true);
+                  setUserName(localStorage.getItem('userName'));
+                }}
+              />
+          } 
+        />
+        
+        <Route 
+          path="/" 
+          element={
+            isAuthenticated ? 
+              <PersonalCabinet 
+                userName={userName} 
+                onLogout={() => setIsAuthenticated(false)}
+              /> : 
+              <Navigate to="/login" />
+          }
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="create-company" element={<CreateCompany />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="campaign-actions" element={<CampaignActions />} />
+          <Route path="payments-getaway" element={<Payments />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 

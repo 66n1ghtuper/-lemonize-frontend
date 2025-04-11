@@ -1,0 +1,80 @@
+/* Dashboard.css */
+.dashboard-container {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 2.5rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1a1a1a;
+    line-height: 1.65;
+  }
+  
+  .dashboard-container h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 1.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  
+  .dashboard-container p {
+    font-size: 1.05rem;
+    margin-bottom: 1.75rem;
+    color: #4b5563;
+  }
+  
+  .lemonize-section {
+    margin-top: 3rem;
+    padding: 2rem;
+    background-color: #f9fafb;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    transition: box-shadow 0.2s ease;
+  }
+  
+  .lemonize-section:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  .lemonize-section h2 {
+    font-size: 1.6rem;
+    font-weight: 650;
+    margin: 1.75rem 0 1.25rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .lemonize-section h2:first-child {
+    margin-top: 0;
+  }
+  
+  .lemonize-section ul {
+    margin-bottom: 1.75rem;
+    padding-left: 1.25rem;
+  }
+  
+  .lemonize-section li {
+    margin-bottom: 1.25rem;
+    color: #4b5563;
+    line-height: 1.7;
+  }
+  
+  .lemonize-section li strong {
+    font-weight: 600;
+    color: #111827;
+  }
+  
+  .emoji {
+    margin-right: 0.75rem;
+    font-size: 1.4rem;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .dashboard-container {
+      padding: 1.5rem;
+    }
+    
+    .lemonize-section {
+      padding: 1.5rem;
+    }
+  }

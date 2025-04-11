@@ -1,0 +1,249 @@
+.regist-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #ffffff;
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+}
+
+.regist-window {
+  display: flex;
+  width: 100%;
+  max-width: 960px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(5, 0, 109, 0.1);
+  overflow: hidden;
+  border: 1px solid #05006d;
+}
+
+.regist-left-side {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.regist-right-side {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+}
+
+.regist-desktop-image {
+  position: absolute;
+  width: auto;
+  height: 100%;
+  min-width: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  opacity: 0.3;
+}
+
+.regist-mobile-image {
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0.3;
+}
+
+.regist-user-type-selector {
+  display: flex;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid #05006d;
+}
+
+.regist-type-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: #ffffff;
+  color: #05006d;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.regist-type-btn.regist-active {
+  background: #05006d;
+  color: #ffd400;
+}
+
+.regist-form-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.regist-form-group {
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.regist-form-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #05006d;
+  border-radius: 5px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #05006d;
+  box-sizing: border-box;
+}
+
+.regist-phone-input {
+  letter-spacing: 0.5px;
+}
+
+.regist-form-input:focus {
+  outline: none;
+  border-color: #ffd400;
+  box-shadow: 0 0 0 2px rgba(255, 212, 0, 0.2);
+}
+
+.regist-btn {
+  width: 100%;
+  padding: 12px;
+  background: #05006d;
+  color: #ffd400;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 10px;
+}
+
+.regist-btn:hover {
+  background: #03004a;
+}
+
+.regist-error-message {
+  color: #e74c3c;
+  margin-bottom: 15px;
+  text-align: center;
+  background-color: #fdecea;
+  padding: 10px;
+  border-radius: 5px;
+  border-left: 4px solid #e74c3c;
+}
+
+.regist-verification-box {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(5, 0, 109, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  border: 1px solid #05006d;
+}
+
+.regist-verification-box h2 {
+  margin-bottom: 20px;
+  color: #05006d;
+}
+
+.regist-verification-box p {
+  color: #05006d;
+  margin-bottom: 20px;
+}
+
+.regist-verification-box input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #05006d;
+  border-radius: 5px;
+  font-size: 14px;
+  text-align: center;
+  letter-spacing: 2px;
+  box-sizing: border-box;
+}
+
+.regist-verification-box button {
+  background: #05006d;
+  color: #ffd400;
+}
+
+.regist-resend-btn {
+  background: none;
+  border: none;
+  color: #05006d;
+  cursor: pointer;
+  margin-top: 10px;
+  text-decoration: underline;
+}
+
+.regist-resend-btn:hover {
+  color: #ffd400;
+}
+
+.regist-resend-btn:disabled {
+  color: #cccccc;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.regist-toggle-login {
+  margin-top: 15px;
+  text-align: center;
+  color: #05006d;
+}
+
+.regist-toggle-btn {
+  background: none;
+  border: none;
+  color: #05006d;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font-size: inherit;
+  font-weight: bold;
+}
+
+.regist-toggle-btn:hover {
+  color: #ffd400;
+}
+
+@media (max-width: 768px) {
+  .regist-window {
+    flex-direction: column;
+  }
+  
+  .regist-right-side {
+    order: -1;
+    height: 150px;
+    min-height: auto;
+  }
+  
+  .regist-left-side, .regist-right-side {
+    padding: 20px;
+  }
+  
+  .regist-verification-box {
+    padding: 20px;
+  }
+
+  .regist-desktop-image {
+    display: none;
+  }
+  
+
+  .regist-phone-input {
+    font-size: 16px;
+  }
+}
