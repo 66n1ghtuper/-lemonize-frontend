@@ -118,15 +118,15 @@ const Registration = ({ onLoginSuccess }) => {
   const handleVerification = (e) => {
     e.preventDefault();
     if (verificationCode === generatedCode || verificationCode === '123456') {
-      // Save user data
+ 
       const userName = formData.businessName || formData.email.split('@')[0];
       localStorage.setItem('userName', userName);
       localStorage.setItem('isAuthenticated', 'true');
       
-      // Notify parent component
+
       onLoginSuccess();
       
-      // Navigate to dashboard
+   
       navigate('/dashboard');
     } else {
       setError('Invalid verification code. Please try again.');

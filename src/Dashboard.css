@@ -1,4 +1,4 @@
-/* Dashboard.css */
+
 .dashboard-container {
     max-width: 750px;
     margin: 0 auto;
@@ -68,7 +68,7 @@
     font-size: 1.4rem;
   }
   
-  /* Responsive adjustments */
+
   @media (max-width: 768px) {
     .dashboard-container {
       padding: 1.5rem;
