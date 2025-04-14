@@ -151,7 +151,7 @@ const Registration = ({ onLoginSuccess }) => {
     return (
       <div className="regist-container">
         <div className="regist-verification-box">
-          <h2>Verify Your Email</h2>
+          <h3>Verify Your Email</h3>
           <p>We've sent a 6-digit verification code to {formData.email}</p>
           <form onSubmit={handleVerification}>
             <input
@@ -184,7 +184,7 @@ const Registration = ({ onLoginSuccess }) => {
     <div className="regist-container">
       <div className="regist-window">
         <div className="regist-left-side">
-          <h2>{isLogin ? 'Login' : 'Create Account'}</h2>
+          <h3>{isLogin ? 'Login' : 'Create Account'}</h3>
           
           {!isLogin && (
             <div className="regist-user-type-selector">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import './PersonalCabinet.css';
 import userAvatar from './gg.png';
@@ -6,6 +6,7 @@ import userAvatar from './gg.png';
 const PersonalCabinet = ({ userName, onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const isActive = (path) => {
     return location.pathname.startsWith(`/${path}`);
@@ -18,6 +19,14 @@ const PersonalCabinet = ({ userName, onLogout }) => {
     navigate('/login');
   };
 
+  const openLogoutModal = () => {
+    setShowLogoutModal(true);
+  };
+
+  const closeLogoutModal = () => {
+    setShowLogoutModal(false);
+  };
+
   const menuItems = [
     { path: 'dashboard', name: 'Dashboard' },
     { path: 'create-company', name: 'Create Company' },
@@ -28,15 +37,43 @@ const PersonalCabinet = ({ userName, onLogout }) => {
 
   return (
     <div className="lkabin">
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="lkabin-modal-overlay">
+          <div className="lkabin-modal">
+            <div className="lkabin-modal-header">
+              <h3>Confirm Logout</h3>
+            </div>
+            <div className="lkabin-modal-body">
+              <p>Are you sure you want to exit your account?</p>
+            </div>
+            <div className="lkabin-modal-buttons">
+              <button 
+                onClick={closeLogoutModal} 
+                className="lkabin-modal-cancel"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleLogout} 
+                className="lkabin-modal-confirm"
+              >
+                Yes, Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <aside className="lkabin-sidebar">
         <div className="lkabin-user-info">
           <div className="lkabin-avatar-container">
             <img src={userAvatar} alt="User Avatar" className="lkabin-user-avatar" />
           </div>
           <h3 className="lkabin-welcome-title">Welcome</h3>
-          <p className="lkabin-username">{userName || 'Пользователь'}</p>
-          <button onClick={handleLogout} className="lkabin-logout-btn">
-          Exit
+          <p className="lkabin-username">{userName || 'User'}</p>
+          <button onClick={openLogoutModal} className="lkabin-logout-btn">
+            <span>Exit</span>
           </button>
         </div>
 

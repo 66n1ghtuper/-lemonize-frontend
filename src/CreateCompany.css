@@ -10,6 +10,7 @@
   color: #2c3e50;
   line-height: 1.6;
   box-sizing: border-box;
+
 }
 
 .form-content {
@@ -36,7 +37,7 @@
   border-radius: 16px 16px 0 0;
 }
 
-h1 {
+h4 {
   color: #2c3e50;
   margin-bottom: 2.5rem;
   font-size: 2.25rem;
@@ -52,7 +53,7 @@ h1 {
   width: 100%;
 }
 
-h1::after {
+h4::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -407,9 +408,15 @@ background-color:#140e8b;
   color: #05006d;
 }
 
+.direction-up {
+  bottom: 100%;
+  top: auto;
+  margin-bottom: 8px;
+  border-radius: 8px 8px 0 0;
+}
+
 .dropdown-options {
   position: absolute;
-  top: calc(100% + 8px);
   left: 0;
   right: 0;
   max-height: 0;
@@ -597,7 +604,6 @@ background-color:#140e8b;
   font-size: 1.3rem;
 }
 
-/* Enhanced Summary Section */
 .summary-section {
   background: linear-gradient(135deg, #f5f7ff 0%, #e6ecff 100%);
   border-radius: 12px;
@@ -638,7 +644,7 @@ background-color:#140e8b;
   font-size: 1.05rem;
 }
 
-/* Modern Navigation Buttons */
+
 .navigation-buttons {
   display: flex;
   justify-content: space-between;
@@ -713,7 +719,7 @@ background-color:#140e8b;
   to { transform: rotate(360deg); }
 }
 
-/* Enhanced Responsiveness */
+
 @media (max-width: 1024px) {
   .campaign-form-container {
     width: 100%;
@@ -808,4 +814,21 @@ background-color:#140e8b;
   .budget-summary {
     padding: 1.5rem;
   }
+}
+
+.multi-select-dropdown .dropdown-options.direction-up {
+  top: auto;
+  bottom: 100%;
+  margin-bottom: 8px;
+  margin-top: 0;
+  border-radius: 8px 8px 0 0;
+}
+
+
+.multi-select-dropdown .dropdown-options:not(.direction-up) {
+  top: 100%;
+  bottom: auto;
+  margin-top: 8px;
+  margin-bottom: 0;
+  border-radius: 0 0 8px 8px;
 }

@@ -1,12 +1,13 @@
+
 import React from 'react';
 
-const PaymentsGetaway = () => {
+const Settings = () => {
   return (
     <div>
-      <h1>Payments</h1>
-      <p>Payment and transaction management</p>
+       <h1>Payments</h1>
+       <p>Payment </p>
     </div>
   );
 };
 
-export default PaymentsGetaway;
+export default Settings;

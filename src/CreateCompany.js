@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './CreateCompany.css';
 
-
 import tiktokIcon from './r4.png';
 import snapchatIcon from './r5.png';
 import metaIcon from './r6.png';
@@ -23,33 +22,32 @@ const CreateCompany = () => {
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [contentType, setContentType] = useState('');
   
-
   const [dailyBudget, setDailyBudget] = useState(50);
   const [campaignDays, setCampaignDays] = useState(7);
   const [totalBudget, setTotalBudget] = useState(350);
   const [budgetError, setBudgetError] = useState('');
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
- 
   const platforms = [
     {
       id: 'tiktok',
       name: 'TikTok',
       icon: tiktokIcon,
-      color: '#000000', 
-      activeColor: '#FE2C55', 
-      gradient: 'linear-gradient(135deg,rgb(242, 24, 24) 0%,rgb(226, 74, 74) 100%)', 
-      shadow: '0 8px 24px rgba(255, 0, 0, 0.52)', 
-      particles: ['#000000', '#FE2C55', '#FFFFFF'] 
+      color: '#FF3D00',
+      activeColor: '#FF5722',
+      gradient: 'linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(255, 87, 34, 0.8) 100%)',
+      shadow: '0 8px 24px rgba(255, 87, 34, 0.5)',
+      particles: ['#FF3D00', '#FF5722', '#FFFFFF']
     },
     {
       id: 'snapchat',
       name: 'Snapchat',
       icon: snapchatIcon,
-      color: '#FFFC00', 
-      activeColor: '#FFEA00',
-      gradient: 'linear-gradient(135deg, #FFFC00 0%, #FFD700 100%)', 
-      shadow: '0 8px 24px rgba(255, 255, 0, 0.5)', 
-      particles: ['#FFFC00', '#FFD700', '#FFFFFF'] 
+      color: '#FFC300',
+      activeColor: '#FFB700',
+      gradient: 'linear-gradient(135deg, rgb(0, 0, 0) 0%, rgb(130, 126, 0) 100%)',
+      shadow: '0 8px 24px rgba(130, 126, 0, 0.5)',
+      particles: ['#FFC300', '#FFD700', '#FFFFFF']
     },
     {
       id: 'meta',
@@ -62,7 +60,6 @@ const CreateCompany = () => {
       particles: ['#1877F2', '#4A90E2', '#FFFFFF'] 
     }
   ];
-  
   
   const objectives = [
     "Awareness",
@@ -77,7 +74,7 @@ const CreateCompany = () => {
   ];
 
   const ageRanges = ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"];
-  const genders = ["Man", "Woman", "Other"];
+  const genders = ["Man", "Woman"];
   const countries = [
     "USA", "Canada", "UK", "Germany", "France", "Japan", "Australia", 
     "Brazil", "India", "China", "Russia", "South Africa", "Mexico", 
@@ -92,19 +89,20 @@ const CreateCompany = () => {
   const interestsList = ["Sports", "Music", "Travel", "Gaming", "Reading", "Cooking", "Technology"];
   const videoFormats = ["Square (1:1)", "Vertical (9:16)"];
   const contentTypes = ["Video", "Static"];
+  const customAudiencesList = ["Existing Customers", "Website Visitors", "Email Subscribers", "Lookalike Audiences"];
 
   useEffect(() => {
     const calculatedTotal = dailyBudget * campaignDays;
     setTotalBudget(calculatedTotal);
     
-   
     if (calculatedTotal < 50) {
       setBudgetError('Minimum total budget is $50');
-    } else if (calculatedTotal > 10000000) {
-      setBudgetError('Maximum total budget is $10,000,000');
+    } else if (calculatedTotal > 36500000) { 
+      setBudgetError('Maximum total budget is $36,500,000');
     } else {
       setBudgetError('');
     }
+    
   }, [dailyBudget, campaignDays]);
 
   const handleObjectiveSelect = (objective) => {
@@ -115,71 +113,120 @@ const CreateCompany = () => {
     }
   };
 
-  const handleSelectAll = () => {
-    if (selectedObjectives.length === objectives.length) {
-      setSelectedObjectives([]);
-    } else {
-      setSelectedObjectives([...objectives]);
-    }
-  };
-
   const handleMultiSelect = (value, state, setState) => {
     if (state.includes(value)) {
       setState(state.filter(item => item !== value));
     } else {
-      setState([...state, value]);
+      setState([...state, value]); 
     }
   };
-
-  const MultiSelectDropdown = ({ label, options, selected, onSelect }) => {
+  
+  const MultiSelectDropdown = ({ label, options, selected, onSelect, className, direction = 'down' }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
-
+  
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
-
+  
     useEffect(() => {
       document.addEventListener('mousedown', handleClickOutside);
       return () => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }, []);
-
-    const toggleOption = (option) => {
+  
+    const toggleOption = (option, e) => {
+      e.stopPropagation();
       onSelect(option);
     };
-
+  
+    const handleDropdownToggle = (e) => {
+      e.stopPropagation();
+      setIsOpen(prev => !prev);
+    };
+  
     return (
-      <div className="form-group" ref={dropdownRef}>
+      <div className={`form-group ${className || ''}`} ref={dropdownRef}>
         <label>{label}</label>
         <div 
           className={`multi-select-dropdown ${isOpen ? 'open' : ''}`}
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={handleDropdownToggle}
         >
           <div className="selected-options">
             {selected.length > 0 ? selected.join(', ') : 'Select options...'}
           </div>
-          <div className={`dropdown-options ${isOpen ? 'visible' : ''}`}>
-            {options.map((option, index) => (
-              <div 
-                key={index} 
-                className={`option ${selected.includes(option) ? 'selected' : ''}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleOption(option);
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={selected.includes(option)}
-                  readOnly
-                />
-                <span>{option}</span>
-              </div>
-            ))}
+          {isOpen && (
+            <div 
+              className={`dropdown-options ${direction === 'up' ? 'direction-up' : ''} visible`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {options.map((option, index) => (
+                <div 
+                  key={index} 
+                  className={`option ${selected.includes(option) ? 'selected' : ''}`}
+                  onClick={(e) => toggleOption(option, e)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(option)}
+                    readOnly
+                  />
+                  <span>{option}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0
+    }).format(amount);
+  };
+
+  const handleSubmit = () => {
+    setShowConfirmationModal(true);
+  };
+
+  const confirmSubmission = () => {
+    setShowConfirmationModal(false);
+    alert(`Campaign submitted successfully with total budget of ${formatCurrency(totalBudget)}!`);
+  };
+
+  const ConfirmationModal = () => {
+    if (!showConfirmationModal) return null;
+
+    return (
+      <div className="lkabin-modal-overlay">
+        <div className="lkabin-modal">
+          <div className="lkabin-modal-header">
+            <h3>Confirm Campaign Creation</h3>
+          </div>
+          <div className="lkabin-modal-body">
+            <p>Are you sure you want to create this campaign with a total budget of {formatCurrency(totalBudget)}?</p>
+            <p>This action cannot be undone.</p>
+          </div>
+          <div className="lkabin-modal-buttons">
+            <button 
+              className="lkabin-modal-cancel"
+              onClick={() => setShowConfirmationModal(false)}
+            >
+              Cancel
+            </button>
+            <button 
+              className="lkabin-modal-confirm"
+              onClick={confirmSubmission}
+            >
+              Confirm
+            </button>
           </div>
         </div>
       </div>
@@ -226,15 +273,6 @@ const CreateCompany = () => {
   const renderStep2 = () => (
     <div className="form-step">
       <h2>Select Objectives</h2>
-      <div className="select-all">
-        <input 
-          type="checkbox" 
-          id="selectAll"
-          checked={selectedObjectives.length === objectives.length}
-          onChange={handleSelectAll}
-        />
-        <label htmlFor="selectAll">Select All</label>
-      </div>
       <div className="objectives-list">
         {objectives.map((objective, index) => (
           <div key={index} className="objective-item">
@@ -274,45 +312,50 @@ const CreateCompany = () => {
         selected={age}
         onSelect={(option) => handleMultiSelect(option, age, setAge)}
       />
-
+  
       <MultiSelectDropdown
         label="Gender"
         options={genders}
         selected={gender}
         onSelect={(option) => handleMultiSelect(option, gender, setGender)}
       />
-
+  
       <MultiSelectDropdown
         label="Demographic"
         options={countries}
         selected={country}
         onSelect={(option) => handleMultiSelect(option, country, setCountry)}
       />
-
+  
       <MultiSelectDropdown
         label="Language"
         options={languages}
         selected={language}
         onSelect={(option) => handleMultiSelect(option, language, setLanguage)}
       />
+<MultiSelectDropdown
+  label="Interests"
+  options={interestsList}
+  selected={interests}
+  onSelect={(option) => handleMultiSelect(option, interests, setInterests)}
+  direction="up"
+/>
 
-      <MultiSelectDropdown
-        label="Interests"
-        options={interestsList}
-        selected={interests}
-        onSelect={(option) => handleMultiSelect(option, interests, setInterests)}
-      />
-
-      <div className="form-group">
-        <label>Custom Audiences</label>
-        <input
-          type="text"
-          value={customAudiences}
-          onChange={(e) => setCustomAudiences(e.target.value)}
-          placeholder="Enter custom audiences, separated by commas"
-        />
-      </div>
-
+<MultiSelectDropdown
+  label="Custom Audiences"
+  options={customAudiencesList}
+  selected={customAudiences.split(',').map(item => item.trim()).filter(item => item)}
+  onSelect={(option) => {
+    const current = customAudiences.split(',').map(item => item.trim()).filter(item => item);
+    if (current.includes(option)) {
+      setCustomAudiences(current.filter(item => item !== option).join(', '));
+    } else {
+      setCustomAudiences([...current, option].join(', '));
+    }
+  }}
+  direction="up"
+/>
+  
       <div className="navigation-buttons">
         <button className="back-btn" onClick={() => setStep(2)}>
           Back
@@ -327,6 +370,7 @@ const CreateCompany = () => {
       </div>
     </div>
   );
+  
 
   const renderStep4 = () => (
     <div className="form-step">
@@ -400,11 +444,22 @@ const CreateCompany = () => {
   const renderStep5 = () => {
     const handleDailyBudgetChange = (e) => {
       const value = e.target.value === "" ? "" : parseInt(e.target.value) || 0;
-      setDailyBudget(value);
+
+      const validatedValue = value < 50 ? 50 : value;
+      setDailyBudget(validatedValue);
+    };
+
+    const handleDailyBudgetBlur = () => {
+      if (dailyBudget < 50) {
+        setDailyBudget(50);
+      } else if (dailyBudget > 100000) {
+        setDailyBudget(100000);
+      }
     };
 
     const handleDailyBudgetSliderChange = (e) => {
-      setDailyBudget(parseInt(e.target.value));
+      const value = parseInt(e.target.value);
+      setDailyBudget(value < 50 ? 50 : value);
     };
 
     const handleDaysChange = (e) => {
@@ -416,20 +471,12 @@ const CreateCompany = () => {
       setCampaignDays(parseInt(e.target.value));
     };
 
-    const handleBlur = () => {
+    const handleDaysBlur = () => {
       if (campaignDays === "" || campaignDays < 1) {
         setCampaignDays(1);
       } else if (campaignDays > 365) {
         setCampaignDays(365);
       }
-    };
-
-    const formatCurrency = (amount) => {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0
-      }).format(amount);
     };
 
     return (
@@ -443,26 +490,27 @@ const CreateCompany = () => {
               <div className="budget-input-container">
                 <input
                   type="number"
-                  min="1"
-                  max="10000000"
+                  min="50"
+                  max="100000"
                   value={dailyBudget === "" ? "" : dailyBudget}
                   onChange={handleDailyBudgetChange}
+                  onBlur={handleDailyBudgetBlur}
                   className="budget-input"
                   placeholder={dailyBudget === "" ? "Enter amount" : ""}
                   onWheel={(e) => e.target.blur()}
                 />
                 <input
                   type="range"
-                  min="1"
-                  max="10000000"
-                  value={dailyBudget || 0}
+                  min="50"
+                  max="100000"
+                  value={dailyBudget || 50}
                   onChange={handleDailyBudgetSliderChange}
                   className="budget-slider"
                 />
               </div>
               <div className="budget-range">
-                <span>Min: $1</span>
-                <span>Max: $10,000,000</span>
+                <span>Min: $50</span>
+                <span>Max: $100,000</span>
               </div>
             </div>
 
@@ -475,7 +523,7 @@ const CreateCompany = () => {
                   max="365"
                   value={campaignDays === "" ? "" : campaignDays}
                   onChange={handleDaysChange}
-                  onBlur={handleBlur}
+                  onBlur={handleDaysBlur}
                   className="budget-input"
                   placeholder={campaignDays === "" ? "Enter days" : ""}
                   onWheel={(e) => e.target.blur()}
@@ -526,7 +574,7 @@ const CreateCompany = () => {
           <button 
             className="next-btn"
             onClick={() => setStep(6)}
-            disabled={!!budgetError || (dailyBudget || 0) * (campaignDays || 0) < 50 || (dailyBudget || 0) * (campaignDays || 0) > 10000000}
+            disabled={!!budgetError || (dailyBudget || 0) * (campaignDays || 0) < 50 || (dailyBudget || 0) * (campaignDays || 0) > 36500000}
           >
             Next
           </button>
@@ -536,14 +584,6 @@ const CreateCompany = () => {
   };
 
   const renderStep6 = () => {
-    const formatCurrency = (amount) => {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0
-      }).format(amount);
-    };
-
     return (
       <div className="form-step">
         <h2>Campaign Summary</h2>
@@ -604,7 +644,7 @@ const CreateCompany = () => {
           </button>
           <button 
             className="submit-btn"
-            onClick={() => alert(`Campaign submitted successfully with total budget of ${formatCurrency(totalBudget)}!`)}
+            onClick={handleSubmit}
           >
             Create Company
           </button>
@@ -616,7 +656,7 @@ const CreateCompany = () => {
   return (
     <div className="campaign-form-container">
       <div className="form-content">
-        <h1>Create New Campaign</h1>
+        <h4>Create New Campaign</h4>
         <div className="progress-bar">
           <div className={`progress-step ${step >= 1 ? 'active' : ''}`}>1</div>
           <div className={`progress-step ${step >= 2 ? 'active' : ''}`}>2</div>
@@ -631,12 +671,11 @@ const CreateCompany = () => {
         {step === 4 && renderStep4()}
         {step === 5 && renderStep5()}
         {step === 6 && renderStep6()}
+
+        <ConfirmationModal />
       </div>
     </div>
   );
 };
 
 export default CreateCompany;
-
-
-
