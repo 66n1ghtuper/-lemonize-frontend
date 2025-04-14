@@ -10,10 +10,7 @@
   
   .dashboard-container h1 {
     font-size: 2.25rem;
-    font-weight: 700;
-    margin-bottom: 1.75rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid #e5e7eb;
+
   }
   
   .dashboard-container p {

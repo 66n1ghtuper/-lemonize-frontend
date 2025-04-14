@@ -33,7 +33,7 @@ const PersonalCabinet = ({ userName, onLogout }) => {
           <div className="lkabin-avatar-container">
             <img src={userAvatar} alt="User Avatar" className="lkabin-user-avatar" />
           </div>
-          <h2 className="lkabin-welcome-title">Welcome</h2>
+          <h3 className="lkabin-welcome-title">Welcome</h3>
           <p className="lkabin-username">{userName || 'Пользователь'}</p>
           <button onClick={handleLogout} className="lkabin-logout-btn">
           Exit

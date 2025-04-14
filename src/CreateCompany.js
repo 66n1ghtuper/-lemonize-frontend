@@ -1,37 +1,76 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './CreateCompany.css';
 
+
+import tiktokIcon from './r4.png';
+import snapchatIcon from './r5.png';
+import metaIcon from './r6.png';
+
 const CreateCompany = () => {
   const [step, setStep] = useState(1);
   const [selectedPlatform, setSelectedPlatform] = useState(null);
   const [selectedObjectives, setSelectedObjectives] = useState([]);
   
-
   const [age, setAge] = useState([]);
   const [gender, setGender] = useState([]);
   const [country, setCountry] = useState([]);
   const [language, setLanguage] = useState([]);
   const [interests, setInterests] = useState([]);
-  const [customAudiences, setCustomAudiences] = useState([]);
-  const [showCustomAudienceInput, setShowCustomAudienceInput] = useState(false);
-  const [newCustomAudience, setNewCustomAudience] = useState('');
+  const [customAudiences, setCustomAudiences] = useState('');
   
-
   const [title, setTitle] = useState('');
   const [videoFormat, setVideoFormat] = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [contentType, setContentType] = useState('');
   
 
-  const [budget, setBudget] = useState(50);
+  const [dailyBudget, setDailyBudget] = useState(50);
+  const [campaignDays, setCampaignDays] = useState(7);
+  const [totalBudget, setTotalBudget] = useState(350);
+  const [budgetError, setBudgetError] = useState('');
 
+ 
+  const platforms = [
+    {
+      id: 'tiktok',
+      name: 'TikTok',
+      icon: tiktokIcon,
+      color: '#000000', 
+      activeColor: '#FE2C55', 
+      gradient: 'linear-gradient(135deg,rgb(242, 24, 24) 0%,rgb(226, 74, 74) 100%)', 
+      shadow: '0 8px 24px rgba(255, 0, 0, 0.52)', 
+      particles: ['#000000', '#FE2C55', '#FFFFFF'] 
+    },
+    {
+      id: 'snapchat',
+      name: 'Snapchat',
+      icon: snapchatIcon,
+      color: '#FFFC00', 
+      activeColor: '#FFEA00',
+      gradient: 'linear-gradient(135deg, #FFFC00 0%, #FFD700 100%)', 
+      shadow: '0 8px 24px rgba(255, 255, 0, 0.5)', 
+      particles: ['#FFFC00', '#FFD700', '#FFFFFF'] 
+    },
+    {
+      id: 'meta',
+      name: 'Meta',
+      icon: metaIcon,
+      color: '#1877F2', 
+      activeColor: '#4A90E2',
+      gradient: 'linear-gradient(135deg, #1877F2 0%, #4A90E2 100%)', 
+      shadow: '0 8px 24px rgba(24, 119, 242, 0.5)', 
+      particles: ['#1877F2', '#4A90E2', '#FFFFFF'] 
+    }
+  ];
+  
+  
   const objectives = [
     "Awareness",
     "Traffic",
     "Engagement",
-    " Video Views",
+    "Video Views",
     "Lead Generation",
-    "App Installs ",
+    "App Installs",
     "Conversions",
     "Catalog sales",
     "Store visits"
@@ -40,53 +79,33 @@ const CreateCompany = () => {
   const ageRanges = ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"];
   const genders = ["Man", "Woman", "Other"];
   const countries = [
-    "USA",
-    "Canada",
-    "UK",
-    "Germany",
-    "France",
-    "Japan",
-    "Australia",
-    "Brazil",
-    "India",
-    "China",
-    "Russia",
-    "South Africa",
-    "Mexico",
-    "Italy",
-    "Spain",
-    "Netherlands",
-    "Sweden",
-    "Norway",
-    "Finland",
-    "New Zealand",
-    "Argentina",
-    "Chile",
-    "Turkey",
-    "Saudi Arabia",
-    "United Arab Emirates",
-    "Singapore",
-    "South Korea",
-    "Thailand",
-    "Vietnam",
-    "Malaysia",
-    "Philippines",
-    "Indonesia",
-    "Egypt",
-    "Nigeria",
-    "Kenya",
-    "Colombia",
-    "Peru",
-    "Iraq",
-    "Iran",
-    "Bangladesh",
-    "Pakistan",
-    "Other"
+    "USA", "Canada", "UK", "Germany", "France", "Japan", "Australia", 
+    "Brazil", "India", "China", "Russia", "South Africa", "Mexico", 
+    "Italy", "Spain", "Netherlands", "Sweden", "Norway", "Finland", 
+    "New Zealand", "Argentina", "Chile", "Turkey", "Saudi Arabia", 
+    "United Arab Emirates", "Singapore", "South Korea", "Thailand", 
+    "Vietnam", "Malaysia", "Philippines", "Indonesia", "Egypt", 
+    "Nigeria", "Kenya", "Colombia", "Peru", "Iraq", "Iran", 
+    "Bangladesh", "Pakistan", "Other"
   ];  
   const languages = ["English", "Spanish", "French", "German", "Japanese", "Other"];
   const interestsList = ["Sports", "Music", "Travel", "Gaming", "Reading", "Cooking", "Technology"];
   const videoFormats = ["Square (1:1)", "Vertical (9:16)"];
   const contentTypes = ["Video", "Static"];
+
+  useEffect(() => {
+    const calculatedTotal = dailyBudget * campaignDays;
+    setTotalBudget(calculatedTotal);
+    
+   
+    if (calculatedTotal < 50) {
+      setBudgetError('Minimum total budget is $50');
+    } else if (calculatedTotal > 10000000) {
+      setBudgetError('Maximum total budget is $10,000,000');
+    } else {
+      setBudgetError('');
+    }
+  }, [dailyBudget, campaignDays]);
 
   const handleObjectiveSelect = (objective) => {
     if (selectedObjectives.includes(objective)) {
@@ -110,18 +129,6 @@ const CreateCompany = () => {
     } else {
       setState([...state, value]);
     }
-  };
-
-  const handleAddCustomAudience = () => {
-    if (newCustomAudience.trim() && !customAudiences.includes(newCustomAudience)) {
-      setCustomAudiences([...customAudiences, newCustomAudience]);
-      setNewCustomAudience('');
-      setShowCustomAudienceInput(false);
-    }
-  };
-
-  const handleRemoveCustomAudience = (audience) => {
-    setCustomAudiences(customAudiences.filter(item => item !== audience));
   };
 
   const MultiSelectDropdown = ({ label, options, selected, onSelect }) => {
@@ -183,60 +190,32 @@ const CreateCompany = () => {
     <div className="form-step">
       <h2>Select Platform</h2>
       <div className="platform-buttons">
-        <button 
-          className={`platform-btn ${selectedPlatform === 'tiktok' ? 'active' : ''}`}
-          onClick={() => setSelectedPlatform('tiktok')}
-        >
-          TikTok
-        </button>
-        <button 
-          className={`platform-btn ${selectedPlatform === 'snapchat' ? 'active' : ''}`}
-          onClick={() => setSelectedPlatform('snapchat')}
-        >
-          Snapchat
-        </button>
-        <button 
-          className={`platform-btn ${selectedPlatform === 'meta' ? 'active' : ''}`}
-          onClick={() => setSelectedPlatform('meta')}
-        >
-          Meta
-        </button>
+        {platforms.map((platform) => (
+          <button
+            key={platform.id}
+            className={`platform-btn ${selectedPlatform === platform.id ? 'active' : ''}`}
+            onClick={() => setSelectedPlatform(platform.id)}
+            style={{
+              '--platform-color': platform.color,
+              '--platform-active-color': platform.activeColor
+            }}
+          >
+            <img 
+              src={platform.icon} 
+              alt={platform.name} 
+              className="platform-icon" 
+            />
+            {platform.name}
+          </button>
+        ))}
       </div>
 
-      {selectedPlatform && (
-        <div className="objectives-container">
-          <h3>Select Objectives</h3>
-          <div className="select-all">
-            <input 
-              type="checkbox" 
-              id="selectAll"
-              checked={selectedObjectives.length === objectives.length}
-              onChange={handleSelectAll}
-            />
-            <label htmlFor="selectAll">Select All</label>
-          </div>
-          <div className="objectives-list">
-            {objectives.map((objective, index) => (
-              <div key={index} className="objective-item">
-                <input
-                  type="checkbox"
-                  id={`objective-${index}`}
-                  checked={selectedObjectives.includes(objective)}
-                  onChange={() => handleObjectiveSelect(objective)}
-                />
-                <label htmlFor={`objective-${index}`}>{objective}</label>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       <div className="navigation-buttons">
-        <div></div> {/* Empty div for spacing */}
+        <div></div>
         <button 
           className="next-btn" 
           onClick={() => setStep(2)}
-          disabled={!selectedPlatform || selectedObjectives.length === 0}
+          disabled={!selectedPlatform}
         >
           Next
         </button>
@@ -245,6 +224,47 @@ const CreateCompany = () => {
   );
 
   const renderStep2 = () => (
+    <div className="form-step">
+      <h2>Select Objectives</h2>
+      <div className="select-all">
+        <input 
+          type="checkbox" 
+          id="selectAll"
+          checked={selectedObjectives.length === objectives.length}
+          onChange={handleSelectAll}
+        />
+        <label htmlFor="selectAll">Select All</label>
+      </div>
+      <div className="objectives-list">
+        {objectives.map((objective, index) => (
+          <div key={index} className="objective-item">
+            <input
+              type="checkbox"
+              id={`objective-${index}`}
+              checked={selectedObjectives.includes(objective)}
+              onChange={() => handleObjectiveSelect(objective)}
+            />
+            <label htmlFor={`objective-${index}`}>{objective}</label>
+          </div>
+        ))}
+      </div>
+
+      <div className="navigation-buttons">
+        <button className="back-btn" onClick={() => setStep(1)}>
+          Back
+        </button>
+        <button 
+          className="next-btn"
+          onClick={() => setStep(3)}
+          disabled={selectedObjectives.length === 0}
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderStep3 = () => (
     <div className="form-step">
       <h2>Targeting Options</h2>
       
@@ -285,58 +305,21 @@ const CreateCompany = () => {
 
       <div className="form-group">
         <label>Custom Audiences</label>
-        <div className="custom-audiences-container">
-          {customAudiences.map((audience, index) => (
-            <div key={index} className="custom-audience-tag">
-              {audience}
-              <button 
-                className="remove-audience-btn"
-                onClick={() => handleRemoveCustomAudience(audience)}
-              >
-                ×
-              </button>
-            </div>
-          ))}
-        </div>
-        
-        {showCustomAudienceInput ? (
-          <div className="add-audience-input">
-            <input
-              type="text"
-              value={newCustomAudience}
-              onChange={(e) => setNewCustomAudience(e.target.value)}
-              placeholder="Enter audience name"
-            />
-            <button 
-              className="add-audience-btn"
-              onClick={handleAddCustomAudience}
-            >
-              Add
-            </button>
-            <button 
-              className="cancel-audience-btn"
-              onClick={() => setShowCustomAudienceInput(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        ) : (
-          <button 
-            className="add-custom-audience-btn"
-            onClick={() => setShowCustomAudienceInput(true)}
-          >
-            + Add Custom Audience
-          </button>
-        )}
+        <input
+          type="text"
+          value={customAudiences}
+          onChange={(e) => setCustomAudiences(e.target.value)}
+          placeholder="Enter custom audiences, separated by commas"
+        />
       </div>
 
       <div className="navigation-buttons">
-        <button className="back-btn" onClick={() => setStep(1)}>
+        <button className="back-btn" onClick={() => setStep(2)}>
           Back
         </button>
         <button 
           className="next-btn"
-          onClick={() => setStep(3)}
+          onClick={() => setStep(4)}
           disabled={age.length === 0 || gender.length === 0 || country.length === 0}
         >
           Next
@@ -345,7 +328,7 @@ const CreateCompany = () => {
     </div>
   );
 
-  const renderStep3 = () => (
+  const renderStep4 = () => (
     <div className="form-step">
       <h2>Campaign Details</h2>
       
@@ -400,12 +383,12 @@ const CreateCompany = () => {
       </div>
 
       <div className="navigation-buttons">
-        <button className="back-btn" onClick={() => setStep(2)}>
+        <button className="back-btn" onClick={() => setStep(3)}>
           Back
         </button>
         <button 
           className="next-btn"
-          onClick={() => setStep(4)}
+          onClick={() => setStep(5)}
           disabled={!title || !contentType || !videoFormat || !websiteUrl}
         >
           Next
@@ -414,81 +397,221 @@ const CreateCompany = () => {
     </div>
   );
 
-  const renderStep4 = () => (
-    <div className="form-step">
-      <h2>Budget</h2>
-      
-      <div className="summary-section">
-        <h3>Campaign Summary</h3>
-        <div className="summary-grid">
-          <div className="summary-item">
-            <strong>Platform:</strong> {selectedPlatform}
+  const renderStep5 = () => {
+    const handleDailyBudgetChange = (e) => {
+      const value = e.target.value === "" ? "" : parseInt(e.target.value) || 0;
+      setDailyBudget(value);
+    };
+
+    const handleDailyBudgetSliderChange = (e) => {
+      setDailyBudget(parseInt(e.target.value));
+    };
+
+    const handleDaysChange = (e) => {
+      const value = e.target.value === "" ? "" : parseInt(e.target.value) || 0;
+      setCampaignDays(value);
+    };
+
+    const handleDaysSliderChange = (e) => {
+      setCampaignDays(parseInt(e.target.value));
+    };
+
+    const handleBlur = () => {
+      if (campaignDays === "" || campaignDays < 1) {
+        setCampaignDays(1);
+      } else if (campaignDays > 365) {
+        setCampaignDays(365);
+      }
+    };
+
+    const formatCurrency = (amount) => {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0
+      }).format(amount);
+    };
+
+    return (
+      <div className="form-step">
+        <h2>Budget & Forecast</h2>
+        
+        <div className="budget-section">
+          <div className="budget-row">
+            <div className="form-group">
+              <label>Budget per day</label>
+              <div className="budget-input-container">
+                <input
+                  type="number"
+                  min="1"
+                  max="10000000"
+                  value={dailyBudget === "" ? "" : dailyBudget}
+                  onChange={handleDailyBudgetChange}
+                  className="budget-input"
+                  placeholder={dailyBudget === "" ? "Enter amount" : ""}
+                  onWheel={(e) => e.target.blur()}
+                />
+                <input
+                  type="range"
+                  min="1"
+                  max="10000000"
+                  value={dailyBudget || 0}
+                  onChange={handleDailyBudgetSliderChange}
+                  className="budget-slider"
+                />
+              </div>
+              <div className="budget-range">
+                <span>Min: $1</span>
+                <span>Max: $10,000,000</span>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Amount of days</label>
+              <div className="budget-input-container">
+                <input
+                  type="number"
+                  min="1"
+                  max="365"
+                  value={campaignDays === "" ? "" : campaignDays}
+                  onChange={handleDaysChange}
+                  onBlur={handleBlur}
+                  className="budget-input"
+                  placeholder={campaignDays === "" ? "Enter days" : ""}
+                  onWheel={(e) => e.target.blur()}
+                />
+                <input
+                  type="range"
+                  min="1"
+                  max="365"
+                  value={campaignDays || 0}
+                  onChange={handleDaysSliderChange}
+                  className="budget-slider"
+                />
+              </div>
+              <div className="budget-range">
+                <span>Min: 1 day</span>
+                <span>Max: 365 days</span>
+              </div>
+            </div>
           </div>
-          <div className="summary-item">
-            <strong>Objectives:</strong> {selectedObjectives.join(', ')}
-          </div>
-          <div className="summary-item">
-            <strong>Age:</strong> {age.join(', ')}
-          </div>
-          <div className="summary-item">
-            <strong>Gender:</strong> {gender.join(', ')}
-          </div>
-          <div className="summary-item">
-            <strong>Demographic:</strong> {country.join(', ')}
-          </div>
-          <div className="summary-item">
-            <strong>Languages:</strong> {language.join(', ')}
-          </div>
-          <div className="summary-item">
-            <strong>Interest:</strong> {interests.join(', ')}
-          </div>
-          <div className="summary-item">
-            <strong>Custom Audiences:</strong> {customAudiences.join(', ')}
-          </div>
-          <div className="summary-item">
-            <strong>Headline:</strong> {title}
-          </div>
-          <div className="summary-item">
-            <strong>Content Type:</strong> {contentType}
-          </div>
-          <div className="summary-item">
-            <strong>Ad Format:</strong> {videoFormat}
-          </div>
-          <div className="summary-item">
-            <strong>Website URL:</strong> {websiteUrl}
+
+          {budgetError && (
+            <div className="budget-error-message">
+              {budgetError}
+            </div>
+          )}
+
+          <div className="budget-summary">
+            <h3>Budget Summary</h3>
+            <div className="summary-row">
+              <span>Budget per day:</span>
+              <span>{dailyBudget === "" ? "$0" : formatCurrency(dailyBudget)}</span>
+            </div>
+            <div className="summary-row">
+              <span>Amount of days:</span>
+              <span>{campaignDays === "" ? "0" : campaignDays} days</span>
+            </div>
+            <div className="summary-row total">
+              <span>Total Budget:</span>
+              <span>{formatCurrency((dailyBudget || 0) * (campaignDays || 0))}</span>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div className="form-group">
-        <label>Budget & Forecast (${budget})</label>
-        <input 
-          type="range" 
-          min="50" 
-          max="10000000" 
-          step="50"
-          value={budget}
-          onChange={(e) => setBudget(e.target.value)}
-        />
-        <div className="budget-range">
-          <span>$50</span>
-          <span>$10,000,000</span>
+        
+        <div className="navigation-buttons">
+          <button className="back-btn" onClick={() => setStep(4)}>
+            Back
+          </button>
+          <button 
+            className="next-btn"
+            onClick={() => setStep(6)}
+            disabled={!!budgetError || (dailyBudget || 0) * (campaignDays || 0) < 50 || (dailyBudget || 0) * (campaignDays || 0) > 10000000}
+          >
+            Next
+          </button>
         </div>
       </div>
+    );
+  };
 
-      <div className="navigation-buttons">
-        <button className="back-btn" onClick={() => setStep(3)}>
-          Back
-        </button>
-        <button 
-          className="submit-btn"
-          onClick={() => alert('Campaign submitted successfully!')}
-        >
-          Launch Review
-        </button>
+  const renderStep6 = () => {
+    const formatCurrency = (amount) => {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0
+      }).format(amount);
+    };
+
+    return (
+      <div className="form-step">
+        <h2>Campaign Summary</h2>
+        
+        <div className="summary-section">
+          <div className="summary-grid">
+            <div className="summary-item">
+              <strong>Platform:</strong> {selectedPlatform}
+            </div>
+            <div className="summary-item">
+              <strong>Objectives:</strong> {selectedObjectives.join(', ')}
+            </div>
+            <div className="summary-item">
+              <strong>Age:</strong> {age.join(', ')}
+            </div>
+            <div className="summary-item">
+              <strong>Gender:</strong> {gender.join(', ')}
+            </div>
+            <div className="summary-item">
+              <strong>Demographic:</strong> {country.join(', ')}
+            </div>
+            <div className="summary-item">
+              <strong>Languages:</strong> {language.join(', ')}
+            </div>
+            <div className="summary-item">
+              <strong>Interest:</strong> {interests.join(', ')}
+            </div>
+            <div className="summary-item">
+              <strong>Custom Audiences:</strong> {customAudiences}
+            </div>
+            <div className="summary-item">
+              <strong>Headline:</strong> {title}
+            </div>
+            <div className="summary-item">
+              <strong>Content Type:</strong> {contentType}
+            </div>
+            <div className="summary-item">
+              <strong>Ad Format:</strong> {videoFormat}
+            </div>
+            <div className="summary-item">
+              <strong>Website URL:</strong> {websiteUrl}
+            </div>
+            <div className="summary-item">
+              <strong>Daily Budget:</strong> {formatCurrency(dailyBudget)}
+            </div>
+            <div className="summary-item">
+              <strong>Campaign Duration:</strong> {campaignDays} days
+            </div>
+            <div className="summary-item">
+              <strong>Total Budget:</strong> {formatCurrency(totalBudget)}
+            </div>
+          </div>
+        </div>
+
+        <div className="navigation-buttons">
+          <button className="back-btn" onClick={() => setStep(5)}>
+            Back
+          </button>
+          <button 
+            className="submit-btn"
+            onClick={() => alert(`Campaign submitted successfully with total budget of ${formatCurrency(totalBudget)}!`)}
+          >
+            Create Company
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="campaign-form-container">
@@ -499,15 +622,21 @@ const CreateCompany = () => {
           <div className={`progress-step ${step >= 2 ? 'active' : ''}`}>2</div>
           <div className={`progress-step ${step >= 3 ? 'active' : ''}`}>3</div>
           <div className={`progress-step ${step >= 4 ? 'active' : ''}`}>4</div>
+          <div className={`progress-step ${step >= 5 ? 'active' : ''}`}>5</div>
         </div>
         
         {step === 1 && renderStep1()}
         {step === 2 && renderStep2()}
         {step === 3 && renderStep3()}
         {step === 4 && renderStep4()}
+        {step === 5 && renderStep5()}
+        {step === 6 && renderStep6()}
       </div>
     </div>
   );
 };
 
 export default CreateCompany;
+
+
+
