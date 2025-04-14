@@ -6,7 +6,7 @@ import snapchatIcon from './r5.png';
 import metaIcon from './r6.png';
 
 const CreateCompany = () => {
-  // Load saved data from localStorage or initialize defaults
+
   const loadFromLocalStorage = (key, defaultValue) => {
     const saved = localStorage.getItem(key);
     return saved !== null ? JSON.parse(saved) : defaultValue;
@@ -57,6 +57,32 @@ const CreateCompany = () => {
     interests, customAudiences, title, videoFormat, websiteUrl, contentType,
     dailyBudget, campaignDays, totalBudget
   ]);
+
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = (event) => {
+      if (event.state && event.state.step) {
+        setStep(event.state.step);
+      } else if (step > 1) {
+        setStep(prevStep => prevStep - 1);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    
+    // Initialize history state
+    window.history.replaceState({ step }, `Step ${step}`, `#step-${step}`);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [step]);
+
+  // Function to navigate between steps with history management
+  const goToStep = (newStep) => {
+    setStep(newStep);
+    window.history.pushState({ step: newStep }, `Step ${newStep}`, `#step-${newStep}`);
+  };
 
   const platforms = [
     {
@@ -226,7 +252,7 @@ const CreateCompany = () => {
   };
 
   const confirmSubmission = () => {
-    // Clear localStorage on successful submission
+
     localStorage.removeItem('campaign_step');
     localStorage.removeItem('campaign_platform');
     localStorage.removeItem('campaign_objectives');
@@ -248,7 +274,7 @@ const CreateCompany = () => {
     alert(`Campaign submitted successfully with total budget of ${formatCurrency(totalBudget)}!`);
     
     // Reset form
-    setStep(1);
+    goToStep(1);
     setSelectedPlatform(null);
     setSelectedObjectives([]);
     setAge([]);
@@ -326,7 +352,7 @@ const CreateCompany = () => {
         <div></div>
         <button 
           className="next-btn" 
-          onClick={() => setStep(2)}
+          onClick={() => goToStep(2)}
           disabled={!selectedPlatform}
         >
           Next
@@ -340,25 +366,32 @@ const CreateCompany = () => {
       <h2>Select Objectives</h2>
       <div className="objectives-list">
         {objectives.map((objective, index) => (
-          <div key={index} className="objective-item">
-            <input
-              type="checkbox"
-              id={`objective-${index}`}
-              checked={selectedObjectives.includes(objective)}
-              onChange={() => handleObjectiveSelect(objective)}
-            />
+          <div 
+            key={index} 
+            className={`objective-item ${selectedObjectives.includes(objective) ? 'selected' : ''}`}
+            onClick={() => handleObjectiveSelect(objective)}
+          >
+            <div className="objective-checkbox">
+              <input
+                type="checkbox"
+                id={`objective-${index}`}
+                checked={selectedObjectives.includes(objective)}
+                readOnly
+              />
+              <span className="checkmark"></span>
+            </div>
             <label htmlFor={`objective-${index}`}>{objective}</label>
           </div>
         ))}
       </div>
-
+  
       <div className="navigation-buttons">
-        <button className="back-btn" onClick={() => setStep(1)}>
+        <button className="back-btn" onClick={() => goToStep(1)}>
           Back
         </button>
         <button 
           className="next-btn"
-          onClick={() => setStep(3)}
+          onClick={() => goToStep(3)}
           disabled={selectedObjectives.length === 0}
         >
           Next
@@ -423,12 +456,12 @@ const CreateCompany = () => {
       />
   
       <div className="navigation-buttons">
-        <button className="back-btn" onClick={() => setStep(2)}>
+        <button className="back-btn" onClick={() => goToStep(2)}>
           Back
         </button>
         <button 
           className="next-btn"
-          onClick={() => setStep(4)}
+          onClick={() => goToStep(4)}
           disabled={age.length === 0 || gender.length === 0 || country.length === 0}
         >
           Next
@@ -492,12 +525,12 @@ const CreateCompany = () => {
       </div>
 
       <div className="navigation-buttons">
-        <button className="back-btn" onClick={() => setStep(3)}>
+        <button className="back-btn" onClick={() => goToStep(3)}>
           Back
         </button>
         <button 
           className="next-btn"
-          onClick={() => setStep(5)}
+          onClick={() => goToStep(5)}
           disabled={!title || !contentType || !videoFormat || !websiteUrl}
         >
           Next
@@ -633,12 +666,12 @@ const CreateCompany = () => {
         </div>
         
         <div className="navigation-buttons">
-          <button className="back-btn" onClick={() => setStep(4)}>
+          <button className="back-btn" onClick={() => goToStep(4)}>
             Back
           </button>
           <button 
             className="next-btn"
-            onClick={() => setStep(6)}
+            onClick={() => goToStep(6)}
             disabled={!!budgetError || (dailyBudget || 0) * (campaignDays || 0) < 50 || (dailyBudget || 0) * (campaignDays || 0) > 36500000}
           >
             Next
@@ -704,7 +737,7 @@ const CreateCompany = () => {
         </div>
 
         <div className="navigation-buttons">
-          <button className="back-btn" onClick={() => setStep(5)}>
+          <button className="back-btn" onClick={() => goToStep(5)}>
             Back
           </button>
           <button 
