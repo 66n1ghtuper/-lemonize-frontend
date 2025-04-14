@@ -6,27 +6,57 @@ import snapchatIcon from './r5.png';
 import metaIcon from './r6.png';
 
 const CreateCompany = () => {
-  const [step, setStep] = useState(1);
-  const [selectedPlatform, setSelectedPlatform] = useState(null);
-  const [selectedObjectives, setSelectedObjectives] = useState([]);
+  // Load saved data from localStorage or initialize defaults
+  const loadFromLocalStorage = (key, defaultValue) => {
+    const saved = localStorage.getItem(key);
+    return saved !== null ? JSON.parse(saved) : defaultValue;
+  };
+
+  const [step, setStep] = useState(loadFromLocalStorage('campaign_step', 1));
+  const [selectedPlatform, setSelectedPlatform] = useState(loadFromLocalStorage('campaign_platform', null));
+  const [selectedObjectives, setSelectedObjectives] = useState(loadFromLocalStorage('campaign_objectives', []));
   
-  const [age, setAge] = useState([]);
-  const [gender, setGender] = useState([]);
-  const [country, setCountry] = useState([]);
-  const [language, setLanguage] = useState([]);
-  const [interests, setInterests] = useState([]);
-  const [customAudiences, setCustomAudiences] = useState('');
+  const [age, setAge] = useState(loadFromLocalStorage('campaign_age', []));
+  const [gender, setGender] = useState(loadFromLocalStorage('campaign_gender', []));
+  const [country, setCountry] = useState(loadFromLocalStorage('campaign_country', []));
+  const [language, setLanguage] = useState(loadFromLocalStorage('campaign_language', []));
+  const [interests, setInterests] = useState(loadFromLocalStorage('campaign_interests', []));
+  const [customAudiences, setCustomAudiences] = useState(loadFromLocalStorage('campaign_customAudiences', ''));
   
-  const [title, setTitle] = useState('');
-  const [videoFormat, setVideoFormat] = useState('');
-  const [websiteUrl, setWebsiteUrl] = useState('');
-  const [contentType, setContentType] = useState('');
+  const [title, setTitle] = useState(loadFromLocalStorage('campaign_title', ''));
+  const [videoFormat, setVideoFormat] = useState(loadFromLocalStorage('campaign_videoFormat', ''));
+  const [websiteUrl, setWebsiteUrl] = useState(loadFromLocalStorage('campaign_websiteUrl', ''));
+  const [contentType, setContentType] = useState(loadFromLocalStorage('campaign_contentType', ''));
   
-  const [dailyBudget, setDailyBudget] = useState(50);
-  const [campaignDays, setCampaignDays] = useState(7);
-  const [totalBudget, setTotalBudget] = useState(350);
+  const [dailyBudget, setDailyBudget] = useState(loadFromLocalStorage('campaign_dailyBudget', 50));
+  const [campaignDays, setCampaignDays] = useState(loadFromLocalStorage('campaign_campaignDays', 7));
+  const [totalBudget, setTotalBudget] = useState(loadFromLocalStorage('campaign_totalBudget', 350));
   const [budgetError, setBudgetError] = useState('');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+
+  // Save all state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('campaign_step', JSON.stringify(step));
+    localStorage.setItem('campaign_platform', JSON.stringify(selectedPlatform));
+    localStorage.setItem('campaign_objectives', JSON.stringify(selectedObjectives));
+    localStorage.setItem('campaign_age', JSON.stringify(age));
+    localStorage.setItem('campaign_gender', JSON.stringify(gender));
+    localStorage.setItem('campaign_country', JSON.stringify(country));
+    localStorage.setItem('campaign_language', JSON.stringify(language));
+    localStorage.setItem('campaign_interests', JSON.stringify(interests));
+    localStorage.setItem('campaign_customAudiences', JSON.stringify(customAudiences));
+    localStorage.setItem('campaign_title', JSON.stringify(title));
+    localStorage.setItem('campaign_videoFormat', JSON.stringify(videoFormat));
+    localStorage.setItem('campaign_websiteUrl', JSON.stringify(websiteUrl));
+    localStorage.setItem('campaign_contentType', JSON.stringify(contentType));
+    localStorage.setItem('campaign_dailyBudget', JSON.stringify(dailyBudget));
+    localStorage.setItem('campaign_campaignDays', JSON.stringify(campaignDays));
+    localStorage.setItem('campaign_totalBudget', JSON.stringify(totalBudget));
+  }, [
+    step, selectedPlatform, selectedObjectives, age, gender, country, language,
+    interests, customAudiences, title, videoFormat, websiteUrl, contentType,
+    dailyBudget, campaignDays, totalBudget
+  ]);
 
   const platforms = [
     {
@@ -102,7 +132,6 @@ const CreateCompany = () => {
     } else {
       setBudgetError('');
     }
-    
   }, [dailyBudget, campaignDays]);
 
   const handleObjectiveSelect = (objective) => {
@@ -197,8 +226,44 @@ const CreateCompany = () => {
   };
 
   const confirmSubmission = () => {
+    // Clear localStorage on successful submission
+    localStorage.removeItem('campaign_step');
+    localStorage.removeItem('campaign_platform');
+    localStorage.removeItem('campaign_objectives');
+    localStorage.removeItem('campaign_age');
+    localStorage.removeItem('campaign_gender');
+    localStorage.removeItem('campaign_country');
+    localStorage.removeItem('campaign_language');
+    localStorage.removeItem('campaign_interests');
+    localStorage.removeItem('campaign_customAudiences');
+    localStorage.removeItem('campaign_title');
+    localStorage.removeItem('campaign_videoFormat');
+    localStorage.removeItem('campaign_websiteUrl');
+    localStorage.removeItem('campaign_contentType');
+    localStorage.removeItem('campaign_dailyBudget');
+    localStorage.removeItem('campaign_campaignDays');
+    localStorage.removeItem('campaign_totalBudget');
+    
     setShowConfirmationModal(false);
     alert(`Campaign submitted successfully with total budget of ${formatCurrency(totalBudget)}!`);
+    
+    // Reset form
+    setStep(1);
+    setSelectedPlatform(null);
+    setSelectedObjectives([]);
+    setAge([]);
+    setGender([]);
+    setCountry([]);
+    setLanguage([]);
+    setInterests([]);
+    setCustomAudiences('');
+    setTitle('');
+    setVideoFormat('');
+    setWebsiteUrl('');
+    setContentType('');
+    setDailyBudget(50);
+    setCampaignDays(7);
+    setTotalBudget(350);
   };
 
   const ConfirmationModal = () => {
@@ -333,28 +398,29 @@ const CreateCompany = () => {
         selected={language}
         onSelect={(option) => handleMultiSelect(option, language, setLanguage)}
       />
-<MultiSelectDropdown
-  label="Interests"
-  options={interestsList}
-  selected={interests}
-  onSelect={(option) => handleMultiSelect(option, interests, setInterests)}
-  direction="up"
-/>
 
-<MultiSelectDropdown
-  label="Custom Audiences"
-  options={customAudiencesList}
-  selected={customAudiences.split(',').map(item => item.trim()).filter(item => item)}
-  onSelect={(option) => {
-    const current = customAudiences.split(',').map(item => item.trim()).filter(item => item);
-    if (current.includes(option)) {
-      setCustomAudiences(current.filter(item => item !== option).join(', '));
-    } else {
-      setCustomAudiences([...current, option].join(', '));
-    }
-  }}
-  direction="up"
-/>
+      <MultiSelectDropdown
+        label="Interests"
+        options={interestsList}
+        selected={interests}
+        onSelect={(option) => handleMultiSelect(option, interests, setInterests)}
+        direction="up"
+      />
+
+      <MultiSelectDropdown
+        label="Custom Audiences"
+        options={customAudiencesList}
+        selected={customAudiences.split(',').map(item => item.trim()).filter(item => item)}
+        onSelect={(option) => {
+          const current = customAudiences.split(',').map(item => item.trim()).filter(item => item);
+          if (current.includes(option)) {
+            setCustomAudiences(current.filter(item => item !== option).join(', '));
+          } else {
+            setCustomAudiences([...current, option].join(', '));
+          }
+        }}
+        direction="up"
+      />
   
       <div className="navigation-buttons">
         <button className="back-btn" onClick={() => setStep(2)}>
@@ -370,7 +436,6 @@ const CreateCompany = () => {
       </div>
     </div>
   );
-  
 
   const renderStep4 = () => (
     <div className="form-step">
