@@ -6,49 +6,80 @@ import snapchatIcon from './r5.png';
 import metaIcon from './r6.png';
 
 const CreateCompany = () => {
-  // Функция для загрузки состояния из URL
+
   const loadStateFromURL = () => {
-    const params = new URLSearchParams(window.location.search);
-    const stateParam = params.get('state');
-    if (stateParam) {
-      try {
-        const decoded = decodeURIComponent(stateParam);
-        if (!decoded) return null;
-        
-        const parsed = JSON.parse(decoded);
-        
-        // Валидация основных полей
-        if (typeof parsed !== 'object' || parsed === null) {
-          console.error('Invalid state format');
-          return null;
-        }
-        
-        return parsed;
-      } catch (e) {
-        console.error('Failed to parse state from URL', e);
-        // Очищаем невалидный URL
-        window.history.replaceState(null, '', window.location.pathname);
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const stateParam = params.get('state');
+      if (!stateParam) {
+        console.log('No state parameter in URL');
+        return null;
       }
+      
+      const decoded = decodeURIComponent(stateParam);
+      if (!decoded) {
+        console.log('Failed to decode state parameter');
+        return null;
+      }
+      
+      const parsed = JSON.parse(decoded);
+      console.log('Parsed state from URL:', parsed);
+      
+      if (typeof parsed !== 'object' || parsed === null) {
+        console.error('Invalid state format');
+        return null;
+      }
+      
+      return parsed;
+    } catch (e) {
+      console.error('Error loading state from URL:', e);
+      return null;
     }
-    return null;
   };
 
   // Функция для сохранения состояния в URL
   const saveStateToURL = (state) => {
-    // Удаляем пустые значения для уменьшения длины URL
+    const fullState = {
+      campaign_step: step,
+      campaign_platform: selectedPlatform,
+      campaign_objectives: selectedObjectives,
+      campaign_age: age,
+      campaign_gender: gender,
+      campaign_country: country,
+      campaign_language: language,
+      campaign_interests: interests,
+      campaign_customAudiences: customAudiences,
+      campaign_title: title,
+      campaign_videoFormat: videoFormat,
+      campaign_websiteUrl: websiteUrl,
+      campaign_contentType: contentType,
+      campaign_dailyBudget: dailyBudget,
+      campaign_campaignDays: campaignDays,
+      campaign_totalBudget: totalBudget,
+      ...state
+    };
+    
+    // Удаляем только полностью пустые значения
     const cleanedState = Object.fromEntries(
-      Object.entries(state).filter(([_, value]) => 
-        value !== null && value !== undefined && value !== '' && 
+      Object.entries(fullState).filter(([_, value]) => 
+        value !== null && value !== undefined && 
+        (typeof value !== 'string' || value.trim() !== '') &&
         (!Array.isArray(value) || value.length > 0)
       )
     );
     
-    const params = new URLSearchParams();
-    params.set('state', encodeURIComponent(JSON.stringify(cleanedState)));
-    window.history.replaceState(null, '', `?${params.toString()}`);
+    try {
+      const params = new URLSearchParams();
+      params.set('state', encodeURIComponent(JSON.stringify(cleanedState)));
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.replaceState(null, '', newUrl);
+      console.log('Saved state to URL:', newUrl);
+    } catch (e) {
+      console.error('Error saving state to URL:', e);
+    }
   };
 
-  // Инициализация состояния с учетом URL
+
   const [step, setStep] = useState(1);
   const [selectedPlatform, setSelectedPlatform] = useState(null);
   const [selectedObjectives, setSelectedObjectives] = useState([]);
@@ -68,62 +99,45 @@ const CreateCompany = () => {
   const [budgetError, setBudgetError] = useState('');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
-  // Загрузка состояния при монтировании компонента
+ 
   useEffect(() => {
     const urlState = loadStateFromURL();
+    console.log('Loaded state from URL:', urlState);
+    
     if (urlState) {
-      if (urlState.campaign_step) setStep(urlState.campaign_step);
-      if (urlState.campaign_platform) setSelectedPlatform(urlState.campaign_platform);
-      if (urlState.campaign_objectives) setSelectedObjectives(urlState.campaign_objectives);
-      if (urlState.campaign_age) setAge(urlState.campaign_age);
-      if (urlState.campaign_gender) setGender(urlState.campaign_gender);
-      if (urlState.campaign_country) setCountry(urlState.campaign_country);
-      if (urlState.campaign_language) setLanguage(urlState.campaign_language);
-      if (urlState.campaign_interests) setInterests(urlState.campaign_interests);
-      if (urlState.campaign_customAudiences) setCustomAudiences(urlState.campaign_customAudiences);
-      if (urlState.campaign_title) setTitle(urlState.campaign_title);
-      if (urlState.campaign_videoFormat) setVideoFormat(urlState.campaign_videoFormat);
-      if (urlState.campaign_websiteUrl) setWebsiteUrl(urlState.campaign_websiteUrl);
-      if (urlState.campaign_contentType) setContentType(urlState.campaign_contentType);
-      if (urlState.campaign_dailyBudget) setDailyBudget(urlState.campaign_dailyBudget);
-      if (urlState.campaign_campaignDays) setCampaignDays(urlState.campaign_campaignDays);
-      if (urlState.campaign_totalBudget) setTotalBudget(urlState.campaign_totalBudget);
+      if (urlState.campaign_step !== undefined) setStep(urlState.campaign_step);
+      if (urlState.campaign_platform !== undefined) setSelectedPlatform(urlState.campaign_platform);
+      if (urlState.campaign_objectives !== undefined) setSelectedObjectives(urlState.campaign_objectives);
+      if (urlState.campaign_age !== undefined) setAge(urlState.campaign_age);
+      if (urlState.campaign_gender !== undefined) setGender(urlState.campaign_gender);
+      if (urlState.campaign_country !== undefined) setCountry(urlState.campaign_country);
+      if (urlState.campaign_language !== undefined) setLanguage(urlState.campaign_language);
+      if (urlState.campaign_interests !== undefined) setInterests(urlState.campaign_interests);
+      if (urlState.campaign_customAudiences !== undefined) setCustomAudiences(urlState.campaign_customAudiences);
+      if (urlState.campaign_title !== undefined) setTitle(urlState.campaign_title);
+      if (urlState.campaign_videoFormat !== undefined) setVideoFormat(urlState.campaign_videoFormat);
+      if (urlState.campaign_websiteUrl !== undefined) setWebsiteUrl(urlState.campaign_websiteUrl);
+      if (urlState.campaign_contentType !== undefined) setContentType(urlState.campaign_contentType);
+      if (urlState.campaign_dailyBudget !== undefined) setDailyBudget(urlState.campaign_dailyBudget);
+      if (urlState.campaign_campaignDays !== undefined) setCampaignDays(urlState.campaign_campaignDays);
+      if (urlState.campaign_totalBudget !== undefined) setTotalBudget(urlState.campaign_totalBudget);
     }
   }, []);
 
-  // Сохранение состояния в URL при каждом изменении
-  useEffect(() => {
-    const state = {
-      campaign_step: step,
-      campaign_platform: selectedPlatform,
-      campaign_objectives: selectedObjectives,
-      campaign_age: age,
-      campaign_gender: gender,
-      campaign_country: country,
-      campaign_language: language,
-      campaign_interests: interests,
-      campaign_customAudiences: customAudiences,
-      campaign_title: title,
-      campaign_videoFormat: videoFormat,
-      campaign_websiteUrl: websiteUrl,
-      campaign_contentType: contentType,
-      campaign_dailyBudget: dailyBudget,
-      campaign_campaignDays: campaignDays,
-      campaign_totalBudget: totalBudget
-    };
 
-    saveStateToURL(state);
+  useEffect(() => {
+    saveStateToURL();
   }, [
     step, selectedPlatform, selectedObjectives, age, gender, country, language,
     interests, customAudiences, title, videoFormat, websiteUrl, contentType,
     dailyBudget, campaignDays, totalBudget
   ]);
 
-  // Обработка кнопок назад/вперед в браузере
+
   useEffect(() => {
     const handlePopState = () => {
       const urlState = loadStateFromURL();
-      if (urlState && urlState.campaign_step) {
+      if (urlState && urlState.campaign_step !== undefined) {
         setStep(urlState.campaign_step);
       }
     };
@@ -304,13 +318,12 @@ const CreateCompany = () => {
   };
 
   const confirmSubmission = () => {
-    // Очищаем URL после подтверждения
+   
     window.history.replaceState(null, '', window.location.pathname);
     
     setShowConfirmationModal(false);
     alert(`Campaign submitted successfully with total budget of ${formatCurrency(totalBudget)}!`);
-    
-    // Сбрасываем форму
+
     setStep(1);
     setSelectedPlatform(null);
     setSelectedObjectives([]);
