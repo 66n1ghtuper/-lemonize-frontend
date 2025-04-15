@@ -157,13 +157,13 @@ h2::after {
     transform: translateY(0); 
   }
 }
-
 .platform-buttons {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
   margin-bottom: 3rem;
   width: 100%;
+  justify-content: center; 
 }
 
 .platform-btn {
@@ -184,8 +184,10 @@ h2::after {
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
+  flex: 1;
+  min-width: 200px; 
+  max-width: 300px; 
 }
-
 .platform-btn::before {
   content: '';
   position: absolute;
@@ -230,6 +232,7 @@ h2::after {
   width: 56px;
   height: 56px;
   margin-bottom: 1rem;
+  margin-left: 10px;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -280,7 +283,6 @@ h2::after {
   background-color: white;
   box-shadow: 0 0 0 4px rgba(5, 0, 109, 0.15);
 }
-
 
 .objectives-list {
   display: grid;

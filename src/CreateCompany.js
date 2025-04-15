@@ -6,7 +6,7 @@ import snapchatIcon from './r5.png';
 import metaIcon from './r6.png';
 
 const CreateCompany = () => {
-  // Функция для загрузки состояния из URL параметров
+
   const loadStateFromURL = () => {
     const params = new URLSearchParams(window.location.search);
     const stateParam = params.get('state');
@@ -20,14 +20,14 @@ const CreateCompany = () => {
     return null;
   };
 
-  // Функция для сохранения состояния в URL
+ 
   const saveStateToURL = (state) => {
     const params = new URLSearchParams();
     params.set('state', encodeURIComponent(JSON.stringify(state)));
     window.history.replaceState(null, '', `?${params.toString()}`);
   };
 
-  // Функция для загрузки состояния из localStorage или URL
+
   const loadInitialState = (key, defaultValue) => {
     const urlState = loadStateFromURL();
     if (urlState && urlState[key] !== undefined) {
@@ -58,7 +58,7 @@ const CreateCompany = () => {
   const [budgetError, setBudgetError] = useState('');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
-  // Сохранение состояния в localStorage и URL при изменениях
+  
   useEffect(() => {
     const state = {
       campaign_step: step,
@@ -106,12 +106,12 @@ const CreateCompany = () => {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Функция для навигации между шагами
+
   const goToStep = (newStep) => {
     setStep(newStep);
   };
 
-  // Остальной код компонента остается без изменений
+
   const platforms = [
     {
       id: 'tiktok',
@@ -280,7 +280,7 @@ const CreateCompany = () => {
   };
 
   const confirmSubmission = () => {
-    // Очищаем localStorage
+    
     localStorage.removeItem('campaign_step');
     localStorage.removeItem('campaign_platform');
     localStorage.removeItem('campaign_objectives');
@@ -298,7 +298,7 @@ const CreateCompany = () => {
     localStorage.removeItem('campaign_campaignDays');
     localStorage.removeItem('campaign_totalBudget');
     
-    // Очищаем URL
+
     window.history.replaceState(null, '', window.location.pathname);
     
     setShowConfirmationModal(false);
@@ -355,7 +355,6 @@ const CreateCompany = () => {
     );
   };
 
-  // Остальные функции рендеринга шагов остаются без изменений
   const renderStep1 = () => (
     <div className="form-step">
       <h2>Select Platform</h2>
@@ -367,7 +366,9 @@ const CreateCompany = () => {
             onClick={() => setSelectedPlatform(platform.id)}
             style={{
               '--platform-color': platform.color,
-              '--platform-active-color': platform.activeColor
+              '--platform-active-color': platform.activeColor,
+              'flex': '1',
+              'minWidth': '200px' 
             }}
           >
             <img 
@@ -379,7 +380,7 @@ const CreateCompany = () => {
           </button>
         ))}
       </div>
-
+  
       <div className="navigation-buttons">
         <div></div>
         <button 
