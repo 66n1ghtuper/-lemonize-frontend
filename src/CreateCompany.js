@@ -6,84 +6,125 @@ import snapchatIcon from './r5.png';
 import metaIcon from './r6.png';
 
 const CreateCompany = () => {
+  const loadStateFromURL = () => {
+    const params = new URLSearchParams(window.location.search);
+    const stateParam = params.get('state');
+    if (stateParam) {
+      try {
+        return JSON.parse(decodeURIComponent(stateParam));
+      } catch (e) {
+        console.error('Failed to parse state from URL', e);
+      }
+    }
+    return null;
+  };
 
-  const loadFromLocalStorage = (key, defaultValue) => {
+  // Функция для сохранения состояния в URL
+  const saveStateToURL = (state) => {
+    const params = new URLSearchParams();
+    params.set('state', encodeURIComponent(JSON.stringify(state)));
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.pushState(state, '', newUrl);
+  };
+
+  
+  const loadInitialState = (key, defaultValue) => {
+    const urlState = loadStateFromURL();
+    if (urlState && urlState[key] !== undefined) {
+      return urlState[key];
+    }
+    
     const saved = localStorage.getItem(key);
     return saved !== null ? JSON.parse(saved) : defaultValue;
   };
 
-  const [step, setStep] = useState(loadFromLocalStorage('campaign_step', 1));
-  const [selectedPlatform, setSelectedPlatform] = useState(loadFromLocalStorage('campaign_platform', null));
-  const [selectedObjectives, setSelectedObjectives] = useState(loadFromLocalStorage('campaign_objectives', []));
-  
-  const [age, setAge] = useState(loadFromLocalStorage('campaign_age', []));
-  const [gender, setGender] = useState(loadFromLocalStorage('campaign_gender', []));
-  const [country, setCountry] = useState(loadFromLocalStorage('campaign_country', []));
-  const [language, setLanguage] = useState(loadFromLocalStorage('campaign_language', []));
-  const [interests, setInterests] = useState(loadFromLocalStorage('campaign_interests', []));
-  const [customAudiences, setCustomAudiences] = useState(loadFromLocalStorage('campaign_customAudiences', ''));
-  
-  const [title, setTitle] = useState(loadFromLocalStorage('campaign_title', ''));
-  const [videoFormat, setVideoFormat] = useState(loadFromLocalStorage('campaign_videoFormat', ''));
-  const [websiteUrl, setWebsiteUrl] = useState(loadFromLocalStorage('campaign_websiteUrl', ''));
-  const [contentType, setContentType] = useState(loadFromLocalStorage('campaign_contentType', ''));
-  
-  const [dailyBudget, setDailyBudget] = useState(loadFromLocalStorage('campaign_dailyBudget', 50));
-  const [campaignDays, setCampaignDays] = useState(loadFromLocalStorage('campaign_campaignDays', 7));
-  const [totalBudget, setTotalBudget] = useState(loadFromLocalStorage('campaign_totalBudget', 350));
+  // Инициализация состояния с учетом URL и localStorage
+  const [step, setStep] = useState(loadInitialState('campaign_step', 1));
+  const [selectedPlatform, setSelectedPlatform] = useState(loadInitialState('campaign_platform', null));
+  const [selectedObjectives, setSelectedObjectives] = useState(loadInitialState('campaign_objectives', []));
+  const [age, setAge] = useState(loadInitialState('campaign_age', []));
+  const [gender, setGender] = useState(loadInitialState('campaign_gender', []));
+  const [country, setCountry] = useState(loadInitialState('campaign_country', []));
+  const [language, setLanguage] = useState(loadInitialState('campaign_language', []));
+  const [interests, setInterests] = useState(loadInitialState('campaign_interests', []));
+  const [customAudiences, setCustomAudiences] = useState(loadInitialState('campaign_customAudiences', ''));
+  const [title, setTitle] = useState(loadInitialState('campaign_title', ''));
+  const [videoFormat, setVideoFormat] = useState(loadInitialState('campaign_videoFormat', ''));
+  const [websiteUrl, setWebsiteUrl] = useState(loadInitialState('campaign_websiteUrl', ''));
+  const [contentType, setContentType] = useState(loadInitialState('campaign_contentType', ''));
+  const [dailyBudget, setDailyBudget] = useState(loadInitialState('campaign_dailyBudget', 50));
+  const [campaignDays, setCampaignDays] = useState(loadInitialState('campaign_campaignDays', 7));
+  const [totalBudget, setTotalBudget] = useState(loadInitialState('campaign_totalBudget', 350));
   const [budgetError, setBudgetError] = useState('');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
-  // Save all state to localStorage whenever it changes
+  // Сохранение состояния в localStorage и URL при изменениях
   useEffect(() => {
-    localStorage.setItem('campaign_step', JSON.stringify(step));
-    localStorage.setItem('campaign_platform', JSON.stringify(selectedPlatform));
-    localStorage.setItem('campaign_objectives', JSON.stringify(selectedObjectives));
-    localStorage.setItem('campaign_age', JSON.stringify(age));
-    localStorage.setItem('campaign_gender', JSON.stringify(gender));
-    localStorage.setItem('campaign_country', JSON.stringify(country));
-    localStorage.setItem('campaign_language', JSON.stringify(language));
-    localStorage.setItem('campaign_interests', JSON.stringify(interests));
-    localStorage.setItem('campaign_customAudiences', JSON.stringify(customAudiences));
-    localStorage.setItem('campaign_title', JSON.stringify(title));
-    localStorage.setItem('campaign_videoFormat', JSON.stringify(videoFormat));
-    localStorage.setItem('campaign_websiteUrl', JSON.stringify(websiteUrl));
-    localStorage.setItem('campaign_contentType', JSON.stringify(contentType));
-    localStorage.setItem('campaign_dailyBudget', JSON.stringify(dailyBudget));
-    localStorage.setItem('campaign_campaignDays', JSON.stringify(campaignDays));
-    localStorage.setItem('campaign_totalBudget', JSON.stringify(totalBudget));
+    const state = {
+      campaign_step: step,
+      campaign_platform: selectedPlatform,
+      campaign_objectives: selectedObjectives,
+      campaign_age: age,
+      campaign_gender: gender,
+      campaign_country: country,
+      campaign_language: language,
+      campaign_interests: interests,
+      campaign_customAudiences: customAudiences,
+      campaign_title: title,
+      campaign_videoFormat: videoFormat,
+      campaign_websiteUrl: websiteUrl,
+      campaign_contentType: contentType,
+      campaign_dailyBudget: dailyBudget,
+      campaign_campaignDays: campaignDays,
+      campaign_totalBudget: totalBudget
+    };
+
+   
+    Object.entries(state).forEach(([key, value]) => {
+      localStorage.setItem(key, JSON.stringify(value));
+    });
+
+    saveStateToURL(state);
   }, [
     step, selectedPlatform, selectedObjectives, age, gender, country, language,
     interests, customAudiences, title, videoFormat, websiteUrl, contentType,
     dailyBudget, campaignDays, totalBudget
   ]);
 
-  // Handle browser back/forward buttons
+  // Обработка кнопок назад/вперед в браузере
   useEffect(() => {
     const handlePopState = (event) => {
-      if (event.state && event.state.step) {
-        setStep(event.state.step);
-      } else if (step > 1) {
-        setStep(prevStep => prevStep - 1);
+      if (event.state) {
+        const state = event.state;
+        setStep(state.campaign_step || 1);
+        setSelectedPlatform(state.campaign_platform || null);
+        setSelectedObjectives(state.campaign_objectives || []);
+        setAge(state.campaign_age || []);
+        setGender(state.campaign_gender || []);
+        setCountry(state.campaign_country || []);
+        setLanguage(state.campaign_language || []);
+        setInterests(state.campaign_interests || []);
+        setCustomAudiences(state.campaign_customAudiences || '');
+        setTitle(state.campaign_title || '');
+        setVideoFormat(state.campaign_videoFormat || '');
+        setWebsiteUrl(state.campaign_websiteUrl || '');
+        setContentType(state.campaign_contentType || '');
+        setDailyBudget(state.campaign_dailyBudget || 50);
+        setCampaignDays(state.campaign_campaignDays || 7);
+        setTotalBudget(state.campaign_totalBudget || 350);
       }
     };
 
     window.addEventListener('popstate', handlePopState);
-    
-    // Initialize history state
-    window.history.replaceState({ step }, `Step ${step}`, `#step-${step}`);
-    
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [step]);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
-  // Function to navigate between steps with history management
+  // Функция для навигации между шагами
   const goToStep = (newStep) => {
     setStep(newStep);
-    window.history.pushState({ step: newStep }, `Step ${newStep}`, `#step-${newStep}`);
   };
 
+  // Остальной код компонента остается без изменений
   const platforms = [
     {
       id: 'tiktok',
@@ -252,7 +293,7 @@ const CreateCompany = () => {
   };
 
   const confirmSubmission = () => {
-
+  
     localStorage.removeItem('campaign_step');
     localStorage.removeItem('campaign_platform');
     localStorage.removeItem('campaign_objectives');
@@ -270,11 +311,14 @@ const CreateCompany = () => {
     localStorage.removeItem('campaign_campaignDays');
     localStorage.removeItem('campaign_totalBudget');
     
+
+    window.history.replaceState(null, '', window.location.pathname);
+    
     setShowConfirmationModal(false);
     alert(`Campaign submitted successfully with total budget of ${formatCurrency(totalBudget)}!`);
     
-    // Reset form
-    goToStep(1);
+ 
+    setStep(1);
     setSelectedPlatform(null);
     setSelectedObjectives([]);
     setAge([]);
@@ -324,6 +368,7 @@ const CreateCompany = () => {
     );
   };
 
+
   const renderStep1 = () => (
     <div className="form-step">
       <h2>Select Platform</h2>
@@ -366,10 +411,11 @@ const CreateCompany = () => {
       <h2>Select Objectives</h2>
       <div className="objectives-list">
         {objectives.map((objective, index) => (
-          <div 
+          <button 
             key={index} 
             className={`objective-item ${selectedObjectives.includes(objective) ? 'selected' : ''}`}
             onClick={() => handleObjectiveSelect(objective)}
+            type="button"
           >
             <div className="objective-checkbox">
               <input
@@ -381,7 +427,7 @@ const CreateCompany = () => {
               <span className="checkmark"></span>
             </div>
             <label htmlFor={`objective-${index}`}>{objective}</label>
-          </div>
+          </button>
         ))}
       </div>
   

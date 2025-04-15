@@ -281,7 +281,7 @@ h2::after {
   box-shadow: 0 0 0 4px rgba(5, 0, 109, 0.15);
 }
 
-/* Updated Objectives List Styles */
+
 .objectives-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -300,6 +300,9 @@ h2::after {
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   cursor: pointer;
   box-sizing: border-box;
+  width: 100%;
+  border: none;
+  text-align: left;
 }
 
 .objective-item:hover {
@@ -317,6 +320,7 @@ h2::after {
   margin-right: 1rem;
   width: 22px;
   height: 22px;
+  pointer-events: none; 
 }
 
 .objective-checkbox input {
@@ -370,6 +374,7 @@ h2::after {
   font-size: 0.95rem;
   font-weight: 500;
   flex: 1;
+  pointer-events: none; 
 }
 
 
