@@ -52,7 +52,7 @@ const Settings = () => {
               <button 
                 className={`platform-button ${activeAccount === 'snapchat' ? 'active' : ''}`} 
                 onClick={() => setActiveAccount('snapchat')}
-                style={{ borderColor: '#FFFC00', backgroundColor: activeAccount === 'snapchat' ? '#FFFC00' : 'rgba(255, 255, 255, 0.15)', color: activeAccount === 'snapchat' ? 'white' : '#FFFC00' }}
+                style={{ borderColor: '#FFB700', backgroundColor: activeAccount === 'snapchat' ? '#FFB700' : 'rgba(255, 255, 255, 0.15)', color: activeAccount === 'snapchat' ? 'white' : '#FFB700' }}
               >
                 <img src={SnapchatIcon} alt="Snapchat" className="platform-icon" />
                 Snapchat

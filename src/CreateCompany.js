@@ -12,7 +12,7 @@ const CreateCompany = () => {
     const stateParam = params.get('state');
     if (stateParam) {
       try {
-        return JSON.parse(decodeURIComponent(atob(stateParam)));
+        return JSON.parse(decodeURIComponent(stateParam));
       } catch (e) {
         console.error('Failed to parse state from URL', e);
       }
@@ -23,54 +23,70 @@ const CreateCompany = () => {
   // Функция для сохранения состояния в URL
   const saveStateToURL = (state) => {
     const params = new URLSearchParams();
-    // Используем btoa для кодирования, чтобы сделать URL более компактным
-    params.set('state', btoa(encodeURIComponent(JSON.stringify(state))));
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.replaceState(null, '', newUrl);
+    params.set('state', encodeURIComponent(JSON.stringify(state)));
+    window.history.replaceState(null, '', `?${params.toString()}`);
   };
 
-  // Инициализация состояния с учетом URL
-  const urlState = loadStateFromURL();
-  const [step, setStep] = useState(urlState?.step || 1);
-  const [selectedPlatform, setSelectedPlatform] = useState(urlState?.platform || null);
-  const [selectedObjectives, setSelectedObjectives] = useState(urlState?.objectives || []);
-  const [age, setAge] = useState(urlState?.age || []);
-  const [gender, setGender] = useState(urlState?.gender || []);
-  const [country, setCountry] = useState(urlState?.country || []);
-  const [language, setLanguage] = useState(urlState?.language || []);
-  const [interests, setInterests] = useState(urlState?.interests || []);
-  const [customAudiences, setCustomAudiences] = useState(urlState?.customAudiences || '');
-  const [title, setTitle] = useState(urlState?.title || '');
-  const [videoFormat, setVideoFormat] = useState(urlState?.videoFormat || '');
-  const [websiteUrl, setWebsiteUrl] = useState(urlState?.websiteUrl || '');
-  const [contentType, setContentType] = useState(urlState?.contentType || '');
-  const [dailyBudget, setDailyBudget] = useState(urlState?.dailyBudget || 50);
-  const [campaignDays, setCampaignDays] = useState(urlState?.campaignDays || 7);
-  const [totalBudget, setTotalBudget] = useState(urlState?.totalBudget || 350);
+  // Функция для загрузки состояния из localStorage или URL
+  const loadInitialState = (key, defaultValue) => {
+    const urlState = loadStateFromURL();
+    if (urlState && urlState[key] !== undefined) {
+      return urlState[key];
+    }
+    
+    const saved = localStorage.getItem(key);
+    return saved !== null ? JSON.parse(saved) : defaultValue;
+  };
+
+  // Инициализация состояния с учетом URL и localStorage
+  const [step, setStep] = useState(loadInitialState('campaign_step', 1));
+  const [selectedPlatform, setSelectedPlatform] = useState(loadInitialState('campaign_platform', null));
+  const [selectedObjectives, setSelectedObjectives] = useState(loadInitialState('campaign_objectives', []));
+  const [age, setAge] = useState(loadInitialState('campaign_age', []));
+  const [gender, setGender] = useState(loadInitialState('campaign_gender', []));
+  const [country, setCountry] = useState(loadInitialState('campaign_country', []));
+  const [language, setLanguage] = useState(loadInitialState('campaign_language', []));
+  const [interests, setInterests] = useState(loadInitialState('campaign_interests', []));
+  const [customAudiences, setCustomAudiences] = useState(loadInitialState('campaign_customAudiences', ''));
+  const [title, setTitle] = useState(loadInitialState('campaign_title', ''));
+  const [videoFormat, setVideoFormat] = useState(loadInitialState('campaign_videoFormat', ''));
+  const [websiteUrl, setWebsiteUrl] = useState(loadInitialState('campaign_websiteUrl', ''));
+  const [contentType, setContentType] = useState(loadInitialState('campaign_contentType', ''));
+  const [dailyBudget, setDailyBudget] = useState(loadInitialState('campaign_dailyBudget', 50));
+  const [campaignDays, setCampaignDays] = useState(loadInitialState('campaign_campaignDays', 7));
+  const [totalBudget, setTotalBudget] = useState(loadInitialState('campaign_totalBudget', 350));
   const [budgetError, setBudgetError] = useState('');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
-  // Сохранение состояния в URL при изменениях
+  // Сохранение состояния в localStorage и URL при изменениях
   useEffect(() => {
     const state = {
-      step,
-      platform: selectedPlatform,
-      objectives: selectedObjectives,
-      age,
-      gender,
-      country,
-      language,
-      interests,
-      customAudiences,
-      title,
-      videoFormat,
-      websiteUrl,
-      contentType,
-      dailyBudget,
-      campaignDays,
-      totalBudget
+      campaign_step: step,
+      campaign_platform: selectedPlatform,
+      campaign_objectives: selectedObjectives,
+      campaign_age: age,
+      campaign_gender: gender,
+      campaign_country: country,
+      campaign_language: language,
+      campaign_interests: interests,
+      campaign_customAudiences: customAudiences,
+      campaign_title: title,
+      campaign_videoFormat: videoFormat,
+      campaign_websiteUrl: websiteUrl,
+      campaign_contentType: contentType,
+      campaign_dailyBudget: dailyBudget,
+      campaign_campaignDays: campaignDays,
+      campaign_totalBudget: totalBudget
     };
+
+    // Сохраняем в localStorage
+    Object.entries(state).forEach(([key, value]) => {
+      localStorage.setItem(key, JSON.stringify(value));
+    });
+
+    // Сохраняем в URL
     saveStateToURL(state);
+
   }, [
     step, selectedPlatform, selectedObjectives, age, gender, country, language,
     interests, customAudiences, title, videoFormat, websiteUrl, contentType,
@@ -81,8 +97,8 @@ const CreateCompany = () => {
   useEffect(() => {
     const handlePopState = () => {
       const urlState = loadStateFromURL();
-      if (urlState) {
-        setStep(urlState.step || 1);
+      if (urlState && urlState.campaign_step) {
+        setStep(urlState.campaign_step);
       }
     };
 
@@ -264,6 +280,24 @@ const CreateCompany = () => {
   };
 
   const confirmSubmission = () => {
+    // Очищаем localStorage
+    localStorage.removeItem('campaign_step');
+    localStorage.removeItem('campaign_platform');
+    localStorage.removeItem('campaign_objectives');
+    localStorage.removeItem('campaign_age');
+    localStorage.removeItem('campaign_gender');
+    localStorage.removeItem('campaign_country');
+    localStorage.removeItem('campaign_language');
+    localStorage.removeItem('campaign_interests');
+    localStorage.removeItem('campaign_customAudiences');
+    localStorage.removeItem('campaign_title');
+    localStorage.removeItem('campaign_videoFormat');
+    localStorage.removeItem('campaign_websiteUrl');
+    localStorage.removeItem('campaign_contentType');
+    localStorage.removeItem('campaign_dailyBudget');
+    localStorage.removeItem('campaign_campaignDays');
+    localStorage.removeItem('campaign_totalBudget');
+    
     // Очищаем URL
     window.history.replaceState(null, '', window.location.pathname);
     
