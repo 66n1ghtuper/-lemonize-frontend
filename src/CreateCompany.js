@@ -12,9 +12,22 @@ const CreateCompany = () => {
     const stateParam = params.get('state');
     if (stateParam) {
       try {
-        return JSON.parse(decodeURIComponent(stateParam));
+        const decoded = decodeURIComponent(stateParam);
+        if (!decoded) return null;
+        
+        const parsed = JSON.parse(decoded);
+        
+        // Валидация основных полей
+        if (typeof parsed !== 'object' || parsed === null) {
+          console.error('Invalid state format');
+          return null;
+        }
+        
+        return parsed;
       } catch (e) {
         console.error('Failed to parse state from URL', e);
+        // Очищаем невалидный URL
+        window.history.replaceState(null, '', window.location.pathname);
       }
     }
     return null;
@@ -22,8 +35,16 @@ const CreateCompany = () => {
 
   // Функция для сохранения состояния в URL
   const saveStateToURL = (state) => {
+    // Удаляем пустые значения для уменьшения длины URL
+    const cleanedState = Object.fromEntries(
+      Object.entries(state).filter(([_, value]) => 
+        value !== null && value !== undefined && value !== '' && 
+        (!Array.isArray(value) || value.length > 0)
+      )
+    );
+    
     const params = new URLSearchParams();
-    params.set('state', encodeURIComponent(JSON.stringify(state)));
+    params.set('state', encodeURIComponent(JSON.stringify(cleanedState)));
     window.history.replaceState(null, '', `?${params.toString()}`);
   };
 
