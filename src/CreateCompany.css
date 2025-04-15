@@ -795,7 +795,9 @@ h2::after {
   .campaign-form-container {
     padding: 1.5rem;
   }
-  
+  .progress-bar {
+    padding: 0; 
+  }
   .form-content {
     padding: 2rem;
   }
@@ -835,7 +837,9 @@ h2::after {
     padding: 1.5rem;
     border-radius: 12px;
   }
-  
+  .progress-bar {
+    padding: 0; 
+  }
   h1 {
     font-size: 1.75rem;
   }
