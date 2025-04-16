@@ -6,6 +6,7 @@ import snapchatIcon from './r5.png';
 import metaIcon from './r6.png';
 
 const CreateCompany = () => {
+
   const loadStateFromURL = () => {
     try {
       const params = new URLSearchParams(window.location.search);
@@ -36,6 +37,7 @@ const CreateCompany = () => {
     }
   };
 
+  // Функция для сохранения состояния в URL
   const saveStateToURL = (state) => {
     const fullState = {
       campaign_step: step,
@@ -57,6 +59,7 @@ const CreateCompany = () => {
       ...state
     };
     
+    // Удаляем только полностью пустые значения
     const cleanedState = Object.fromEntries(
       Object.entries(fullState).filter(([_, value]) => 
         value !== null && value !== undefined && 
@@ -69,12 +72,13 @@ const CreateCompany = () => {
       const params = new URLSearchParams();
       params.set('state', encodeURIComponent(JSON.stringify(cleanedState)));
       const newUrl = `${window.location.pathname}?${params.toString()}`;
-      window.history.pushState(null, '', newUrl);
+      window.history.replaceState(null, '', newUrl);
       console.log('Saved state to URL:', newUrl);
     } catch (e) {
       console.error('Error saving state to URL:', e);
     }
   };
+
 
   const [step, setStep] = useState(1);
   const [selectedPlatform, setSelectedPlatform] = useState(null);
@@ -95,6 +99,7 @@ const CreateCompany = () => {
   const [budgetError, setBudgetError] = useState('');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
+ 
   useEffect(() => {
     const urlState = loadStateFromURL();
     console.log('Loaded state from URL:', urlState);
@@ -119,6 +124,7 @@ const CreateCompany = () => {
     }
   }, []);
 
+
   useEffect(() => {
     saveStateToURL();
   }, [
@@ -127,17 +133,12 @@ const CreateCompany = () => {
     dailyBudget, campaignDays, totalBudget
   ]);
 
+
   useEffect(() => {
-    const handlePopState = (event) => {
-      // Prevent default back behavior if we want to handle it manually
-      // event.preventDefault();
-      
+    const handlePopState = () => {
       const urlState = loadStateFromURL();
       if (urlState && urlState.campaign_step !== undefined) {
         setStep(urlState.campaign_step);
-      } else {
-        // If no state in URL, go to step 1
-        setStep(1);
       }
     };
 
@@ -147,12 +148,6 @@ const CreateCompany = () => {
 
   const goToStep = (newStep) => {
     setStep(newStep);
-  };
-
-  const handleBackNavigation = () => {
-    if (step > 1) {
-      goToStep(step - 1);
-    }
   };
 
   const platforms = [
@@ -323,6 +318,7 @@ const CreateCompany = () => {
   };
 
   const confirmSubmission = () => {
+   
     window.history.replaceState(null, '', window.location.pathname);
     
     setShowConfirmationModal(false);
@@ -443,7 +439,7 @@ const CreateCompany = () => {
       </div>
   
       <div className="navigation-buttons">
-        <button className="back-btn" onClick={handleBackNavigation}>
+        <button className="back-btn" onClick={() => goToStep(1)}>
           Back
         </button>
         <button 
@@ -513,7 +509,7 @@ const CreateCompany = () => {
       />
   
       <div className="navigation-buttons">
-        <button className="back-btn" onClick={handleBackNavigation}>
+        <button className="back-btn" onClick={() => goToStep(2)}>
           Back
         </button>
         <button 
@@ -582,7 +578,7 @@ const CreateCompany = () => {
       </div>
 
       <div className="navigation-buttons">
-        <button className="back-btn" onClick={handleBackNavigation}>
+        <button className="back-btn" onClick={() => goToStep(3)}>
           Back
         </button>
         <button 
@@ -723,7 +719,7 @@ const CreateCompany = () => {
         </div>
         
         <div className="navigation-buttons">
-          <button className="back-btn" onClick={handleBackNavigation}>
+          <button className="back-btn" onClick={() => goToStep(4)}>
             Back
           </button>
           <button 
@@ -794,7 +790,7 @@ const CreateCompany = () => {
         </div>
 
         <div className="navigation-buttons">
-          <button className="back-btn" onClick={handleBackNavigation}>
+          <button className="back-btn" onClick={() => goToStep(5)}>
             Back
           </button>
           <button 
