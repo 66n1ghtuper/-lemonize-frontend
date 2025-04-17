@@ -23,7 +23,6 @@ const Settings = () => {
   });
   const [error, setError] = useState(null);
 
-
   useEffect(() => {
     localStorage.setItem('settingsActiveTab', activeTab);
   }, [activeTab]);
@@ -67,43 +66,20 @@ const Settings = () => {
       setIsLoading(prev => ({ ...prev, [platform]: false }));
       return;
     }
-
-    const messageListener = (event) => {
+    window.addEventListener('message', (event) => {
+      // Поставьте origin вашего сайта!
       if (event.origin !== window.location.origin) return;
-      
-      if (event.data.type === 'oauth-success' && event.data.platform === platform) {
-        setIsConnected(prev => ({...prev, [platform]: true}));
-        setActiveAccount(platform);
-        
-        try {
-          const savedConnections = JSON.parse(localStorage.getItem('socialConnections')) || {};
-          savedConnections[platform] = true;
-          localStorage.setItem('socialConnections', JSON.stringify(savedConnections));
-        } catch (err) {
-          console.error('Error saving to localStorage:', err);
-          setError('Failed to save connection');
+  
+      if (event.data?.type === 'TIKTOK_AUTH') {
+        if (event.data.success) {
+          // логин успешен, например:
+          alert('Успешно!');
+          //location.reload();
         }
-        
-        popup.close();
-        window.removeEventListener('message', messageListener);
-        setIsLoading(prev => ({ ...prev, [platform]: false }));
-      } else if (event.data.type === 'oauth-error') {
-        setError(`Failed to connect with ${platform}: ${event.data.message}`);
-        setIsLoading(prev => ({ ...prev, [platform]: false }));
-        window.removeEventListener('message', messageListener);
       }
-    };
-
-    const timer = setInterval(() => {
-      if (popup.closed) {
-        clearInterval(timer);
-        window.removeEventListener('message', messageListener);
-        setIsLoading(prev => ({ ...prev, [platform]: false }));
-      }
-    }, 500);
-
-    window.addEventListener('message', messageListener);
-  };
+    });
+  }
+   
 
   const handleTikTokLogin = () => {
     const csrfState = Math.random().toString(36).substring(2);
