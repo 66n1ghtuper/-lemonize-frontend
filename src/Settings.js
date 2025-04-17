@@ -5,7 +5,11 @@ import SnapchatIcon from './r5.png';
 import MetaIcon from './r6.png';
 
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState('accounts');
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTab = localStorage.getItem('settingsActiveTab');
+    return savedTab || 'accounts';
+  });
+  
   const [activeAccount, setActiveAccount] = useState(null);
   const [isConnected, setIsConnected] = useState({
     tiktok: false,
@@ -18,7 +22,27 @@ const Settings = () => {
     meta: false
   });
   const [error, setError] = useState(null);
+  
 
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [passwordErrors, setPasswordErrors] = useState({});
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  
+
+  const [usernameData, setUsernameData] = useState({
+    newUsername: '',
+    currentPassword: ''
+  });
+  const [usernameErrors, setUsernameErrors] = useState({});
+  const [usernameSuccess, setUsernameSuccess] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('settingsActiveTab', activeTab);
+  }, [activeTab]);
 
   useEffect(() => {
     const checkConnections = () => {
@@ -37,7 +61,133 @@ const Settings = () => {
     checkConnections();
   }, []);
 
- 
+
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+
+    if (passwordErrors[name]) {
+      setPasswordErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const validatePasswordForm = () => {
+    const errors = {};
+    let isValid = true;
+    
+    if (!passwordData.currentPassword.trim()) {
+      errors.currentPassword = 'Current password is required';
+      isValid = false;
+    }
+    
+    if (!passwordData.newPassword.trim()) {
+      errors.newPassword = 'New password is required';
+      isValid = false;
+    } else if (passwordData.newPassword.length < 8) {
+      errors.newPassword = 'Password must be at least 8 characters';
+      isValid = false;
+    }
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match';
+      isValid = false;
+    }
+    
+    setPasswordErrors(errors);
+    return isValid;
+  };
+
+  const handlePasswordSubmit = (e) => {
+    e.preventDefault();
+    setPasswordSuccess(false);
+    
+    if (validatePasswordForm()) {
+
+      setIsLoading(prev => ({ ...prev, password: true }));
+      
+      setTimeout(() => {
+        setIsLoading(prev => ({ ...prev, password: false }));
+        setPasswordSuccess(true);
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+        
+
+        setTimeout(() => setPasswordSuccess(false), 3000);
+      }, 1500);
+    }
+  };
+
+
+  const handleUsernameChange = (e) => {
+    const { name, value } = e.target;
+    setUsernameData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+
+    if (usernameErrors[name]) {
+      setUsernameErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const validateUsernameForm = () => {
+    const errors = {};
+    let isValid = true;
+    
+    if (!usernameData.newUsername.trim()) {
+      errors.newUsername = 'New username is required';
+      isValid = false;
+    } else if (usernameData.newUsername.length < 3) {
+      errors.newUsername = 'Username must be at least 3 characters';
+      isValid = false;
+    }
+    
+    if (!usernameData.currentPassword.trim()) {
+      errors.currentPassword = 'Password is required';
+      isValid = false;
+    }
+    
+    setUsernameErrors(errors);
+    return isValid;
+  };
+
+  const handleUsernameSubmit = (e) => {
+    e.preventDefault();
+    setUsernameSuccess(false);
+    
+    if (validateUsernameForm()) {
+
+      setIsLoading(prev => ({ ...prev, username: true }));
+      
+      setTimeout(() => {
+        setIsLoading(prev => ({ ...prev, username: false }));
+        setUsernameSuccess(true);
+        setUsernameData(prev => ({
+          ...prev,
+          currentPassword: ''
+        }));
+        
+
+        setTimeout(() => setUsernameSuccess(false), 3000);
+      }, 1500);
+    }
+  };
+
+
   const openOAuthPopup = (url, platform) => {
     setIsLoading(prev => ({ ...prev, [platform]: true }));
     setError(null);
@@ -100,7 +250,7 @@ const Settings = () => {
 
   const handleTikTokLogin = () => {
     const clientId = process.env.REACT_APP_TIKTOK_CLIENT_ID || 'sbawitneur5tk8d1gm';
-    const redirectUri = 'https://enteneller.icu:3000/auth/tiktok';
+    const redirectUri = 'https://enteneller.ru/redirect.php';
     const state = 'tiktok_' + Math.random().toString(36).substring(2);
     
     const authUrl = `https://www.tiktok.com/auth/authorize?client_key=${clientId}&scope=user.info.basic&response_type=code&redirect_uri=${redirectUri}&state=${state}`;
@@ -109,7 +259,7 @@ const Settings = () => {
   };
 
   const handleSnapchatLogin = () => {
-    const clientId = process.env.REACT_APP_SNAPCHAT_CLIENT_ID || 'снепчат айди клиент';
+    const clientId = process.env.REACT_APP_SNAPCHAT_CLIENT_ID || 'snapchat cli';
     const redirectUri = encodeURIComponent(`${window.location.origin}/auth/snapchat`);
     const scope = encodeURIComponent('https://auth.snapchat.com/oauth2/api/user.display_name');
     
@@ -119,7 +269,7 @@ const Settings = () => {
   };
 
   const handleMetaLogin = () => {
-    const clientId = process.env.REACT_APP_META_CLIENT_ID || 'мета клиент айди';
+    const clientId = process.env.REACT_APP_META_CLIENT_ID || 'meta cli';
     const redirectUri = encodeURIComponent(`${window.location.origin}/auth/meta`);
     const scope = encodeURIComponent('public_profile,email');
     
@@ -161,6 +311,13 @@ const Settings = () => {
     }
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setError(null);
+    setPasswordSuccess(false);
+    setUsernameSuccess(false);
+  };
+
   return (
     <div className="campaign-form-container">
       <div className="form-content">
@@ -178,19 +335,19 @@ const Settings = () => {
         <div className="menu-tabs">
           <button 
             className={`menu-tab ${activeTab === 'password' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('password')}
+            onClick={() => handleTabChange('password')}
           >
             Change Password
           </button>
           <button 
             className={`menu-tab ${activeTab === 'username' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('username')}
+            onClick={() => handleTabChange('username')}
           >
             Change Username
           </button>
           <button 
             className={`menu-tab ${activeTab === 'accounts' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('accounts')}
+            onClick={() => handleTabChange('accounts')}
           >
             Connected Accounts
           </button>
@@ -204,7 +361,6 @@ const Settings = () => {
             </p>
             
             <div className="platform-buttons-vertical">
-      
               <div className={`platform-card ${activeAccount === 'tiktok' ? 'active' : ''}`}>
                 <div className="platform-header">
                   <img src={TikTokIcon} alt="TikTok" className="platform-icon" />
@@ -233,7 +389,6 @@ const Settings = () => {
                 )}
               </div>
               
-
               <div className={`platform-card ${activeAccount === 'snapchat' ? 'active' : ''}`}>
                 <div className="platform-header">
                   <img src={SnapchatIcon} alt="Snapchat" className="platform-icon" />
@@ -338,14 +493,117 @@ const Settings = () => {
         {activeTab === 'password' && (
           <div className="form-section">
             <h2>Change Password</h2>
-            <p>Password change form would appear here</p>
+            <form onSubmit={handlePasswordSubmit} className="settings-form">
+              <div className="form-group">
+                <label htmlFor="currentPassword">Current Password</label>
+                <input
+                  type="password"
+                  id="currentPassword"
+                  name="currentPassword"
+                  value={passwordData.currentPassword}
+                  onChange={handlePasswordChange}
+                  className={passwordErrors.currentPassword ? 'error' : ''}
+                />
+                {passwordErrors.currentPassword && (
+                  <span className="error-message">{passwordErrors.currentPassword}</span>
+                )}
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="newPassword">New Password</label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  name="newPassword"
+                  value={passwordData.newPassword}
+                  onChange={handlePasswordChange}
+                  className={passwordErrors.newPassword ? 'error' : ''}
+                />
+                {passwordErrors.newPassword && (
+                  <span className="error-message">{passwordErrors.newPassword}</span>
+                )}
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="confirmPassword">Confirm New Password</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={passwordData.confirmPassword}
+                  onChange={handlePasswordChange}
+                  className={passwordErrors.confirmPassword ? 'error' : ''}
+                />
+                {passwordErrors.confirmPassword && (
+                  <span className="error-message">{passwordErrors.confirmPassword}</span>
+                )}
+              </div>
+              
+              <button 
+                type="submit" 
+                className="submit-btn"
+                disabled={isLoading.password}
+              >
+                {isLoading.password ? 'Updating...' : 'Update Password'}
+              </button>
+              
+              {passwordSuccess && (
+                <div className="success-message">
+                  Password updated successfully!
+                </div>
+              )}
+            </form>
           </div>
         )}
 
         {activeTab === 'username' && (
           <div className="form-section">
             <h2>Change Username</h2>
-            <p>Username change form would appear here</p>
+            <form onSubmit={handleUsernameSubmit} className="settings-form">
+              <div className="form-group">
+                <label htmlFor="newUsername">New Username</label>
+                <input
+                  type="text"
+                  id="newUsername"
+                  name="newUsername"
+                  value={usernameData.newUsername}
+                  onChange={handleUsernameChange}
+                  className={usernameErrors.newUsername ? 'error' : ''}
+                />
+                {usernameErrors.newUsername && (
+                  <span className="error-message">{usernameErrors.newUsername}</span>
+                )}
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="currentPassword">Current Password</label>
+                <input
+                  type="password"
+                  id="currentPassword"
+                  name="currentPassword"
+                  value={usernameData.currentPassword}
+                  onChange={handleUsernameChange}
+                  className={usernameErrors.currentPassword ? 'error' : ''}
+                />
+                {usernameErrors.currentPassword && (
+                  <span className="error-message">{usernameErrors.currentPassword}</span>
+                )}
+              </div>
+              
+              <button 
+                type="submit" 
+                className="submit-btn"
+                disabled={isLoading.username}
+              >
+                {isLoading.username ? 'Updating...' : 'Update Username'}
+              </button>
+              
+              {usernameSuccess && (
+                <div className="success-message">
+                  Username updated successfully!
+                </div>
+              )}
+            </form>
           </div>
         )}
       </div>

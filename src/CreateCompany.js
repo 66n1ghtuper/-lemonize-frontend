@@ -6,79 +6,6 @@ import snapchatIcon from './r5.png';
 import metaIcon from './r6.png';
 
 const CreateCompany = () => {
-
-  const loadStateFromURL = () => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const stateParam = params.get('state');
-      if (!stateParam) {
-        console.log('No state parameter in URL');
-        return null;
-      }
-      
-      const decoded = decodeURIComponent(stateParam);
-      if (!decoded) {
-        console.log('Failed to decode state parameter');
-        return null;
-      }
-      
-      const parsed = JSON.parse(decoded);
-      console.log('Parsed state from URL:', parsed);
-      
-      if (typeof parsed !== 'object' || parsed === null) {
-        console.error('Invalid state format');
-        return null;
-      }
-      
-      return parsed;
-    } catch (e) {
-      console.error('Error loading state from URL:', e);
-      return null;
-    }
-  };
-
- 
-  const saveStateToURL = (state) => {
-    const fullState = {
-      campaign_step: step,
-      campaign_platform: selectedPlatform,
-      campaign_objectives: selectedObjectives,
-      campaign_age: age,
-      campaign_gender: gender,
-      campaign_country: country,
-      campaign_language: language,
-      campaign_interests: interests,
-      campaign_customAudiences: customAudiences,
-      campaign_title: title,
-      campaign_videoFormat: videoFormat,
-      campaign_websiteUrl: websiteUrl,
-      campaign_contentType: contentType,
-      campaign_dailyBudget: dailyBudget,
-      campaign_campaignDays: campaignDays,
-      campaign_totalBudget: totalBudget,
-      ...state
-    };
-    
-    const cleanedState = Object.fromEntries(
-      Object.entries(fullState).filter(([_, value]) => 
-        value !== null && value !== undefined && 
-        (typeof value !== 'string' || value.trim() !== '') &&
-        (!Array.isArray(value) || value.length > 0)
-      )
-    );
-    
-    try {
-      const params = new URLSearchParams();
-      params.set('state', encodeURIComponent(JSON.stringify(cleanedState)));
-      const newUrl = `${window.location.pathname}?${params.toString()}`;
-      window.history.replaceState(null, '', newUrl);
-      console.log('Saved state to URL:', newUrl);
-    } catch (e) {
-      console.error('Error saving state to URL:', e);
-    }
-  };
-
-
   const [step, setStep] = useState(1);
   const [selectedPlatform, setSelectedPlatform] = useState(null);
   const [selectedObjectives, setSelectedObjectives] = useState([]);
@@ -98,46 +25,22 @@ const CreateCompany = () => {
   const [budgetError, setBudgetError] = useState('');
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
- 
+  // Track previous steps for back navigation
+  const [previousSteps, setPreviousSteps] = useState([]);
+  
+  // Initialize with empty state
   useEffect(() => {
-    const urlState = loadStateFromURL();
-    console.log('Loaded state from URL:', urlState);
-    
-    if (urlState) {
-      if (urlState.campaign_step !== undefined) setStep(urlState.campaign_step);
-      if (urlState.campaign_platform !== undefined) setSelectedPlatform(urlState.campaign_platform);
-      if (urlState.campaign_objectives !== undefined) setSelectedObjectives(urlState.campaign_objectives);
-      if (urlState.campaign_age !== undefined) setAge(urlState.campaign_age);
-      if (urlState.campaign_gender !== undefined) setGender(urlState.campaign_gender);
-      if (urlState.campaign_country !== undefined) setCountry(urlState.campaign_country);
-      if (urlState.campaign_language !== undefined) setLanguage(urlState.campaign_language);
-      if (urlState.campaign_interests !== undefined) setInterests(urlState.campaign_interests);
-      if (urlState.campaign_customAudiences !== undefined) setCustomAudiences(urlState.campaign_customAudiences);
-      if (urlState.campaign_title !== undefined) setTitle(urlState.campaign_title);
-      if (urlState.campaign_videoFormat !== undefined) setVideoFormat(urlState.campaign_videoFormat);
-      if (urlState.campaign_websiteUrl !== undefined) setWebsiteUrl(urlState.campaign_websiteUrl);
-      if (urlState.campaign_contentType !== undefined) setContentType(urlState.campaign_contentType);
-      if (urlState.campaign_dailyBudget !== undefined) setDailyBudget(urlState.campaign_dailyBudget);
-      if (urlState.campaign_campaignDays !== undefined) setCampaignDays(urlState.campaign_campaignDays);
-      if (urlState.campaign_totalBudget !== undefined) setTotalBudget(urlState.campaign_totalBudget);
+    // Clear any existing URL parameters
+    if (window.location.search) {
+      window.history.replaceState(null, '', window.location.pathname);
     }
   }, []);
 
-
+  // Handle browser back/forward navigation
   useEffect(() => {
-    saveStateToURL();
-  }, [
-    step, selectedPlatform, selectedObjectives, age, gender, country, language,
-    interests, customAudiences, title, videoFormat, websiteUrl, contentType,
-    dailyBudget, campaignDays, totalBudget
-  ]);
-
-
-  useEffect(() => {
-    const handlePopState = () => {
-      const urlState = loadStateFromURL();
-      if (urlState && urlState.campaign_step !== undefined) {
-        setStep(urlState.campaign_step);
+    const handlePopState = (event) => {
+      if (event.state && event.state.step) {
+        setStep(event.state.step);
       }
     };
 
@@ -146,6 +49,20 @@ const CreateCompany = () => {
   }, []);
 
   const goToStep = (newStep) => {
+    // When moving forward, add current step to history
+    if (newStep > step) {
+      setPreviousSteps(prev => [...prev, step]);
+      window.history.pushState({ step: newStep }, '', window.location.pathname);
+    } 
+    // When moving back, use previousSteps stack
+    else if (newStep < step) {
+      const prevStep = previousSteps[previousSteps.length - 1];
+      if (prevStep !== undefined) {
+        setPreviousSteps(prev => prev.slice(0, -1));
+        window.history.pushState({ step: newStep }, '', window.location.pathname);
+      }
+    }
+    
     setStep(newStep);
   };
 
@@ -317,12 +234,10 @@ const CreateCompany = () => {
   };
 
   const confirmSubmission = () => {
-   
-    window.history.replaceState(null, '', window.location.pathname);
-    
     setShowConfirmationModal(false);
     alert(`Campaign submitted successfully with total budget of ${formatCurrency(totalBudget)}!`);
 
+    // Reset form
     setStep(1);
     setSelectedPlatform(null);
     setSelectedObjectives([]);
@@ -339,6 +254,10 @@ const CreateCompany = () => {
     setDailyBudget(50);
     setCampaignDays(7);
     setTotalBudget(350);
+    setPreviousSteps([]);
+    
+    // Clear history
+    window.history.replaceState(null, '', window.location.pathname);
   };
 
   const ConfirmationModal = () => {
