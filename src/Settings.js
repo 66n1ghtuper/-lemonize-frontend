@@ -68,7 +68,7 @@ const Settings = () => {
     }
     window.addEventListener('message', (event) => {
       // Поставьте origin вашего сайта!
-      if (event.origin !== window.location.origin) return;
+     // if (event.origin !== window.location.origin) return;
   
       if (event.data?.type === 'TIKTOK_AUTH') {
         if (event.data.success) {
@@ -80,7 +80,7 @@ const Settings = () => {
     });
   }
    
-
+ 
   const handleTikTokLogin = () => {
     const csrfState = Math.random().toString(36).substring(2);
     //res.cookie('csrfState', csrfState, { maxAge: 60000 });
