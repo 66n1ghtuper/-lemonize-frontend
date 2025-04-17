@@ -30,25 +30,6 @@ const Settings = () => {
     localStorage.setItem('settingsActiveTab', activeTab);
   }, [activeTab]);
 
-  // Fetch TikTok profile on mount
-  useEffect(() => {
-    fetch('https://enteneller.icu:3000/get_tiktok_data')
-      .then((response) => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.json();
-      })
-      .then((data) => {
-        if (data && data.username) {
-          setTikTokName(data.username);
-          setIsConnected((prev) => ({ ...prev, tiktok: true }));
-        }
-      })
-      .catch((err) => {
-        console.error('Error fetching TikTok data:', err);
-        setError('Failed to fetch TikTok data');
-      });
-  }, []);
-  
   useEffect(() => {
 	fetch('https://enteneller.icu:3000/get_tiktok_data')
 	  .then((res) => res.json())
@@ -56,8 +37,8 @@ const Settings = () => {
 	  {
 		if (data) 
 		{
-		 // setTikTokName(data);
-		  setIsConnected((prev) => ({ ...prev, tiktok: true }));
+			tiktokName = data;
+			setIsConnected((prev) => ({ ...prev, tiktok: true }));
 		}
 	  })
 	  .finally(() => {
