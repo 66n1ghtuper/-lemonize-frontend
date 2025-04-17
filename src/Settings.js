@@ -82,7 +82,8 @@ const Settings = () => {
     }
 
     window.addEventListener('message', (event) => {
-      if (event.data?.type === 'TIKTOK_AUTH' && event.data.success) {
+      if (event.data?.type === 'TIKTOK_AUTH') {
+		  alert("Success!");
         // After successful auth, refetch user data
         fetch('https://enteneller.icu:3000/get_tiktok_data')
           .then((res) => res.json())
