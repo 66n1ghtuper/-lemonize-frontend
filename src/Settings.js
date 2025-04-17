@@ -26,6 +26,28 @@ const Settings = () => {
   useEffect(() => {
     localStorage.setItem('settingsActiveTab', activeTab);
   }, [activeTab]);
+ 
+  useEffect(() => {
+    fetch('https://enteneller.icu:3000/get_tiktok_data') // URL вашего API
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Data:', data); // Log the fetched data
+        //setTikTokData(data); // Store the data in state
+        if(data!="error")
+        {
+
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        setError('Failed to fetch TikTok data'); // Set error if fetch fails
+      });
+  }, []);
 
   useEffect(() => {
     const checkConnections = () => {
@@ -215,6 +237,7 @@ const Settings = () => {
                     </button>
                   </div>
                 ) : (
+                 // <text name id="tiktok_name"></text>
                   <button 
                     onClick={() => handleSocialLogin('tiktok')}
                     className="connect-btn"
