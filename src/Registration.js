@@ -352,3 +352,4 @@ const Registration = ({ onLoginSuccess }) => {
 };
 
 export default Registration;
+//привет
