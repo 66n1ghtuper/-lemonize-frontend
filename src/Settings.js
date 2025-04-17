@@ -250,7 +250,7 @@ const Settings = () => {
 
   const handleTikTokLogin = () => {
     const clientId = process.env.REACT_APP_TIKTOK_CLIENT_ID || 'sbawitneur5tk8d1gm';
-    const redirectUri = 'https://enteneller.ru/redirect.php';
+    const redirectUri = 'https://enteneller.ru/tiktok/redirect/';
     const state = 'tiktok_' + Math.random().toString(36).substring(2);
     
     const authUrl = `https://www.tiktok.com/auth/authorize?client_key=${clientId}&scope=user.info.basic&response_type=code&redirect_uri=${redirectUri}&state=${state}`;
