@@ -87,9 +87,11 @@ const Settings = () => {
         // After successful auth, refetch user data
         fetch('https://enteneller.icu:3000/get_tiktok_data')
           .then((res) => res.json())
-          .then((data) => {
-            if (data && data.username) {
-              setTikTokName(data.username);
+          .then((data) => 
+		  {
+            if (data) 
+			{
+              setTikTokName(data);
               setIsConnected((prev) => ({ ...prev, tiktok: true }));
             }
           })
