@@ -37,7 +37,7 @@ const CreateCompany = () => {
     }
   };
 
-  // Функция для сохранения состояния в URL
+ 
   const saveStateToURL = (state) => {
     const fullState = {
       campaign_step: step,
@@ -59,7 +59,6 @@ const CreateCompany = () => {
       ...state
     };
     
-    // Удаляем только полностью пустые значения
     const cleanedState = Object.fromEntries(
       Object.entries(fullState).filter(([_, value]) => 
         value !== null && value !== undefined && 

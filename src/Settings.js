@@ -98,10 +98,9 @@ const Settings = () => {
     window.addEventListener('message', messageListener);
   };
 
-
   const handleTikTokLogin = () => {
-    const clientId = process.env.REACT_APP_TIKTOK_CLIENT_ID || 'sbawitneur5tk8d1gm';
-    const redirectUri = encodeURIComponent(`${window.location.origin}https://dizzylemon.vercel.app/dashboard`);
+    const clientId = process.env.REACT_APP_TIKTOK_CLIENT_ID || 'awfa4q2dxgm4lokq';
+    const redirectUri = encodeURIComponent('https://dizzylemon.vercel.app/dashboard');
     const state = 'tiktok_' + Math.random().toString(36).substring(2);
     
     const authUrl = `https://www.tiktok.com/auth/authorize?client_key=${clientId}&scope=user.info.basic&response_type=code&redirect_uri=${redirectUri}&state=${state}`;
