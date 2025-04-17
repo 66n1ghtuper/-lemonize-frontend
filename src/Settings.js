@@ -100,7 +100,7 @@ const Settings = () => {
 
   const handleTikTokLogin = () => {
     const clientId = process.env.REACT_APP_TIKTOK_CLIENT_ID || 'sbawitneur5tk8d1gm';
-    const redirectUri = encodeURIComponent('https://dizzylemon.vercel.app/dashboard');
+    const redirectUri = 'https%3A%2F%2Fdizzylemon.vercel.app%2Fdashboard';
     const state = 'tiktok_' + Math.random().toString(36).substring(2);
     
     const authUrl = `https://www.tiktok.com/auth/authorize?client_key=${clientId}&scope=user.info.basic&response_type=code&redirect_uri=${redirectUri}&state=${state}`;
