@@ -48,6 +48,23 @@ const Settings = () => {
         setError('Failed to fetch TikTok data');
       });
   }, []);
+  
+  useEffect(() => {
+	fetch('https://enteneller.icu:3000/get_tiktok_data')
+	  .then((res) => res.json())
+	  .then((data) => 
+	  {
+		if (data) 
+		{
+		 // setTikTokName(data);
+		  setIsConnected((prev) => ({ ...prev, tiktok: true }));
+		}
+	  })
+	  .finally(() => {
+		setIsLoading((prev) => ({ ...prev, tiktok: false }));
+	  });
+  }, []);
+          
 
   // Load connection state from localStorage
   useEffect(() => {
@@ -81,23 +98,11 @@ const Settings = () => {
       return;
     }
 
-    window.addEventListener('message', (event) => {
-      if (event.data?.type === 'TIKTOK_AUTH') {
-		  alert("Success!");
-        // After successful auth, refetch user data
-        fetch('https://enteneller.icu:3000/get_tiktok_data')
-          .then((res) => res.json())
-          .then((data) => 
-		  {
-            if (data) 
-			{
-             // setTikTokName(data);
-              setIsConnected((prev) => ({ ...prev, tiktok: true }));
-            }
-          })
-          .finally(() => {
-            setIsLoading((prev) => ({ ...prev, tiktok: false }));
-          });
+    window.addEventListener('message', (event) => 
+	{
+      if (event.data?.type === 'TIKTOK_AUTH') 
+	  {
+		  window.location.reload();
       }
     });
   };
