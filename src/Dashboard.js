@@ -1,52 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './Dashboard.css';
-import { exchangeCodeForToken, checkForAuthCode, getTikTokAuthUrl } from './tiktokAuth';
 
 const Dashboard = () => {
-  const [tiktokConnected, setTiktokConnected] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const authenticateTikTok = async () => {
-      const code = checkForAuthCode();
-      if (code) {
-        setLoading(true);
-        try {
-          const token = await exchangeCodeForToken(code);
-          if (token) {
-            setTiktokConnected(true);
-            window.history.replaceState({}, document.title, window.location.pathname);
-          }
-        } catch (error) {
-          console.error('TikTok auth error:', error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    authenticateTikTok();
-  }, []);
-
-  const handleConnectTikTok = () => {
-    window.location.href = getTikTokAuthUrl();
-  };
-
   return (
     <div className="dashboard-container">
       <h1>Dashboard</h1>
       
-      <div className="social-connections">
-        <button 
-          onClick={handleConnectTikTok}
-          disabled={tiktokConnected || loading}
-          className={`connect-btn ${tiktokConnected ? 'connected' : ''}`}
-        >
-          {loading ? 'Processing...' : 
-           tiktokConnected ? '✓ TikTok Connected' : 'Connect TikTok'}
-        </button>
-      </div>
-
       <div className="lemonize-section">
         <h2><span className="emoji">🚀</span> What is Lemonize?</h2>
         <p>Lemonize is an all-in-one media buying platform that empowers businesses of all sizes to create, launch, and optimize ad campaigns across top social media channels — including Meta (Facebook, Instagram, WhatsApp), TikTok, and Snapchat — all through a simple, centralized Portal or App.</p>
