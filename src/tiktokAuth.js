@@ -1,6 +1,6 @@
 export async function exchangeCodeForToken(authCode) {
-    const clientKey = 'awfa4q2dxgm4lokq';
-    const clientSecret = 'A0CfoxuZxYlEevuhj7avNWGJm1V5vY0A';
+    const clientKey = 'sbawitneur5tk8d1gm';
+    const clientSecret = 'CskyxxBpyjloqvz89LwxagXfvRrFlF6n';
     const redirectUri = 'https://dizzylemon.vercel.app/dashboard';
   
     const tokenUrl = 'https://open.tiktokapis.com/v2/oauth/token/';
@@ -24,16 +24,16 @@ export async function exchangeCodeForToken(authCode) {
       });
   
       const data = await response.json();
-      console.log('🎉 Access Token Response:', data);
+      console.log('Access Token Response:', data);
   
       if (data.access_token) {
         return data.access_token;
       } else {
-        console.error('❌ Ошибка получения access_token:', data);
+        console.error(' Ошибка получения access_token:', data);
         return null;
       }
     } catch (error) {
-      console.error('❌ Ошибка запроса:', error);
+      console.error(' Ошибка запроса:', error);
       return null;
     }
   }
@@ -44,7 +44,7 @@ export async function exchangeCodeForToken(authCode) {
   }
   
   export function getTikTokAuthUrl() {
-    const clientKey = 'awfa4q2dxgm4lokq';
+    const clientKey = 'sbawitneur5tk8d1gm';
     const redirectUri = encodeURIComponent('https://dizzylemon.vercel.app/dashboard');
     const scopes = encodeURIComponent('user.info.basic,video.list');
     
