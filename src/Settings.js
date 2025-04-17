@@ -37,7 +37,7 @@ const Settings = () => {
 	  {
 		if (data) 
 		{
-			tiktokName = data;
+			setTikTokName(data);
 			setIsConnected((prev) => ({ ...prev, tiktok: true }));
 		}
 	  })
