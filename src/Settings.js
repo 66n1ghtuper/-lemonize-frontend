@@ -100,7 +100,7 @@ const Settings = () => {
 
 
   const handleTikTokLogin = () => {
-    const clientId = process.env.REACT_APP_TIKTOK_CLIENT_ID || 'клиент айди тик ток';
+    const clientId = process.env.REACT_APP_TIKTOK_CLIENT_ID || 'awfa4q2dxgm4lokq';
     const redirectUri = encodeURIComponent(`${window.location.origin}/auth/tiktok`);
     const state = 'tiktok_' + Math.random().toString(36).substring(2);
     
