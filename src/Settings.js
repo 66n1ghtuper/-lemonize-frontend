@@ -73,8 +73,9 @@ const Settings = () => {
       if (event.data?.type === 'TIKTOK_AUTH') {
         if (event.data.success) {
           // логин успешен, например:
-          alert('Успешно!');
-          //location.reload();
+          alert('Success!');
+
+          window.location.reload();
         }
       }
     });
