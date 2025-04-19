@@ -31,7 +31,7 @@ const Settings = () => {
   }, [activeTab]);
 
   useEffect(() => {
-	fetch('https://enteneller.icu:3000/auth/tiktok')
+	fetch('https://enteneller.icu:3000/get_tiktok_data')
 	  .then((res) => res.json())
 	  .then((data) => 
 	  {
