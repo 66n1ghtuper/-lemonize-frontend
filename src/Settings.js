@@ -31,13 +31,12 @@ const Settings = () => {
   }, [activeTab]);
 
   useEffect(() => {
-	fetch('https://enteneller.icu:3000/get_tiktok_data')
+	fetch('https://enteneller.ru/tiktok/get_login_data/')
 	  .then((res) => res.json())
 	  .then((data) => 
 	  {
-		if (data) 
+		if (data['display_name']) 
 		{
-			//setTikTokName(data);
 			setIsConnected((prev) => ({ ...prev, tiktok: true }));
 		}
 	  })
