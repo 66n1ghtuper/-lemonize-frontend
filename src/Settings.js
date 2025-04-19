@@ -96,7 +96,7 @@ const Settings = () => {
     url += '?client_key=' + 'sbawitneur5tk8d1gm';
     url += '&scope=user.info.basic';
     url += '&response_type=code';
-    url += '&redirect_uri=' + encodeURIComponent('https://enteneller.icu:3000/auth/tiktok/');
+    url += '&redirect_uri=' + encodeURIComponent('https://enteneller.ru/tiktok/redirect/');
     url += '&state=' + csrfState;
 
     openOAuthPopup(url, 'tiktok');
