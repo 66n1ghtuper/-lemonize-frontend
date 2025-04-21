@@ -86,6 +86,14 @@ const Settings = () => {
         credentials: 'include'
       });
       
+      if (response.status === 401) {
+        setIsConnected(prev => ({ ...prev, tiktok: false }));
+        setTikTokData(null);
+        localStorage.removeItem('tiktokData');
+        localStorage.removeItem('tiktokConnected');
+        return;
+      }
+      
       const data = await response.json();
       
       if (!response.ok) {
@@ -196,6 +204,14 @@ const Settings = () => {
           method: 'POST',
           credentials: 'include'
         });
+
+        if (response.status === 401) {
+          setIsConnected(prev => ({ ...prev, tiktok: false }));
+          setTikTokData(null);
+          localStorage.removeItem('tiktokData');
+          localStorage.removeItem('tiktokConnected');
+          return;
+        }
 
         if (!response.ok) {
           throw new Error('Logout request failed');
