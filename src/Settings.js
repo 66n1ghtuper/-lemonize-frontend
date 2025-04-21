@@ -110,7 +110,7 @@ const Settings = () => {
       if (data.access_token) {
         setCookie('tiktok_token', data.access_token, {
           path: '/',
-          maxAge: 3600, // 1 hour
+          maxAge: 3600, 
           secure: true,
           sameSite: 'strict'
         });

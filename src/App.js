@@ -1,4 +1,4 @@
-// App.js
+
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import PersonalCabinet from './PersonalCabinet';
 import Dashboard from './Dashboard';
@@ -8,7 +8,7 @@ import CampaignActions from './CampaignActions';
 import Payments from './Payments';
 import Registration from './Registration';
 import { useEffect, useState } from 'react';
-import { CookiesProvider } from 'react-cookie'; // Added CookiesProvider
+import { CookiesProvider } from 'react-cookie'; 
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -41,7 +41,7 @@ function App() {
   }
 
   return (
-    <CookiesProvider> {/* Wrapped entire app with CookiesProvider */}
+    <CookiesProvider> 
       <Router>
         <PathTracker />
         <Routes>
