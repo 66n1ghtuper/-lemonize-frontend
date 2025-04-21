@@ -21,7 +21,6 @@ function App() {
     setIsAuthenticated(auth);
     setUserName(name);
     
-   
     if (auth && lastPath) {
       setInitialPath(lastPath);
     }
@@ -31,7 +30,6 @@ function App() {
     const location = useLocation();
     
     useEffect(() => {
-      
       if (isAuthenticated && location.pathname !== '/login') {
         localStorage.setItem('lastPath', location.pathname);
       }
@@ -75,7 +73,8 @@ function App() {
           <Route index element={<Navigate to={initialPath || '/dashboard'} />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="create-company" element={<CreateCompany />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="settings" element={<Navigate to="/settings/accounts" replace />} />
+          <Route path="settings/:section" element={<Settings />} />
           <Route path="campaign-actions" element={<CampaignActions />} />
           <Route path="payments-getaway" element={<Payments />} />
         </Route>
