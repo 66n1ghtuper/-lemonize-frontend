@@ -9,12 +9,14 @@ import APIManagementIcon from './qer.png';
 import MultiIcon from './qer.png';
 import SecurityIcon from './qer.png';
 import DExportIcon from './qer.png';
+import { useCookies } from 'react-cookie';
 
 const Settings = () => {
   const { section } = useParams();
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [activeTab, setActiveTab] = useState(section || 'Multi');
+  const [cookies, setCookie, removeCookie] = useCookies(['csrfState', 'tiktok_token']);
 
   const [activeAccount, setActiveAccount] = useState(null);
   const [tiktokData, setTikTokData] = useState(() => {
@@ -91,6 +93,7 @@ const Settings = () => {
         setTikTokData(null);
         localStorage.removeItem('tiktokData');
         localStorage.removeItem('tiktokConnected');
+        removeCookie('tiktok_token', { path: '/' });
         return;
       }
       
@@ -102,6 +105,16 @@ const Settings = () => {
       }
       
       setTikTokData(data);
+      
+      // Store TikTok token in cookie if available
+      if (data.access_token) {
+        setCookie('tiktok_token', data.access_token, {
+          path: '/',
+          maxAge: 3600, // 1 hour
+          secure: true,
+          sameSite: 'strict'
+        });
+      }
     } catch (err) {
       console.error('Error fetching TikTok data:', err);
       setTikTokData({ error: 'Connection error' });
@@ -159,6 +172,14 @@ const Settings = () => {
 
   const handleTikTokLogin = () => {
     const csrfState = Math.random().toString(36).substring(2);
+
+    setCookie('csrfState', csrfState, { 
+      path: '/', 
+      maxAge: 600, 
+      secure: true,
+      sameSite: 'strict'
+    });
+    
     const url = `https://www.tiktok.com/v2/auth/authorize/?client_key=sbawitneur5tk8d1gm&scope=user.info.basic&response_type=code&redirect_uri=${encodeURIComponent('https://enteneller.ru/tiktok/redirect/')}&state=${csrfState}`;
     openOAuthPopup(url, 'tiktok');
   };
@@ -210,6 +231,7 @@ const Settings = () => {
           setTikTokData(null);
           localStorage.removeItem('tiktokData');
           localStorage.removeItem('tiktokConnected');
+          removeCookie('tiktok_token', { path: '/' });
           return;
         }
 
@@ -221,6 +243,7 @@ const Settings = () => {
         setTikTokData(null);
         localStorage.removeItem('tiktokData');
         localStorage.removeItem('tiktokConnected');
+        removeCookie('tiktok_token', { path: '/' });
 
         window.location.reload();
       } catch (err) {

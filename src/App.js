@@ -1,3 +1,4 @@
+// App.js
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import PersonalCabinet from './PersonalCabinet';
 import Dashboard from './Dashboard';
@@ -7,6 +8,7 @@ import CampaignActions from './CampaignActions';
 import Payments from './Payments';
 import Registration from './Registration';
 import { useEffect, useState } from 'react';
+import { CookiesProvider } from 'react-cookie'; // Added CookiesProvider
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,47 +41,49 @@ function App() {
   }
 
   return (
-    <Router>
-      <PathTracker />
-      <Routes>
-        <Route 
-          path="/login" 
-          element={
-            isAuthenticated ? 
-              <Navigate to={initialPath || '/dashboard'} /> : 
-              <Registration 
-                onLoginSuccess={() => {
-                  setIsAuthenticated(true);
-                  setUserName(localStorage.getItem('userName'));
-                }}
-              />
-          } 
-        />
-        
-        <Route 
-          path="/" 
-          element={
-            isAuthenticated ? 
-              <PersonalCabinet 
-                userName={userName} 
-                onLogout={() => {
-                  setIsAuthenticated(false);
-                  localStorage.removeItem('lastPath');
-                }}
-              /> : 
-              <Navigate to="/login" />
-          }
-        >
-          <Route index element={<Navigate to={initialPath || '/dashboard'} />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="create-company" element={<CreateCompany />} />
-          <Route path="settings" element={<Navigate to="/settings/accounts" replace />} />
-          <Route path="settings/:section" element={<Settings />} />
-          <Route path="campaign-actions" element={<CampaignActions />} />
-          <Route path="payments-getaway" element={<Payments />} />
-        </Route>
-      </Routes>
-    </Router>
+    <CookiesProvider> {/* Wrapped entire app with CookiesProvider */}
+      <Router>
+        <PathTracker />
+        <Routes>
+          <Route 
+            path="/login" 
+            element={
+              isAuthenticated ? 
+                <Navigate to={initialPath || '/dashboard'} /> : 
+                <Registration 
+                  onLoginSuccess={() => {
+                    setIsAuthenticated(true);
+                    setUserName(localStorage.getItem('userName'));
+                  }}
+                />
+            } 
+          />
+          
+          <Route 
+            path="/" 
+            element={
+              isAuthenticated ? 
+                <PersonalCabinet 
+                  userName={userName} 
+                  onLogout={() => {
+                    setIsAuthenticated(false);
+                    localStorage.removeItem('lastPath');
+                  }}
+                /> : 
+                <Navigate to="/login" />
+            }
+          >
+            <Route index element={<Navigate to={initialPath || '/dashboard'} />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="create-company" element={<CreateCompany />} />
+            <Route path="settings" element={<Navigate to="/settings/accounts" replace />} />
+            <Route path="settings/:section" element={<Settings />} />
+            <Route path="campaign-actions" element={<CampaignActions />} />
+            <Route path="payments-getaway" element={<Payments />} />
+          </Route>
+        </Routes>
+      </Router>
+    </CookiesProvider>
   );
 }
 
