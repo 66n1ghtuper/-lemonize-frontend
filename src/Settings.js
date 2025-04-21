@@ -11,30 +11,15 @@ import SecurityIcon from './qer.png';
 import DExportIcon from './qer.png';
 
 const Settings = () => {
-<<<<<<< HEAD
   const { section } = useParams();
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [activeTab, setActiveTab] = useState(section || 'Multi');
 
   const [activeAccount, setActiveAccount] = useState(null);
-  const [tiktokName, setTikTokName] = useState(() => {
-    const savedName = localStorage.getItem('tiktokAPIManagement');
-    return savedName || '';
-=======
-  const [activeTab, setActiveTab] = useState(() => {
-    const savedTab = localStorage.getItem('settingsActiveTab');
-    return savedTab || 'accounts';
-  });
-
-  const [activeAccount, setActiveAccount] = useState(null);
-  const [tiktokName, setTikTokName] = useState('');
-
-  const [isConnected, setIsConnected] = useState({
-    tiktok: false,
-    snapchat: false,
-    meta: false
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
+  const [tiktokData, setTikTokData] = useState(() => {
+    const savedData = localStorage.getItem('tiktokData');
+    return savedData ? JSON.parse(savedData) : null;
   });
 
   const [isConnected, setIsConnected] = useState(() => {
@@ -54,7 +39,6 @@ const Settings = () => {
 
   const [error, setError] = useState(null);
 
-  // Persist selected tab
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -72,34 +56,13 @@ const Settings = () => {
   useEffect(() => {
     localStorage.setItem('settingsActiveTab', activeTab);
   }, [activeTab]);
-<<<<<<< HEAD
-=======
 
   useEffect(() => {
-	fetch('https://enteneller.ru/tiktok/get_login_data/')
-	  .then((res) => res.json())
-	  .then((data) => 
-	  {
-		if (data['display_name']) 
-		{
-			setIsConnected((prev) => ({ ...prev, tiktok: true }));
-		}
-	  })
-	  .finally(() => {
-		setIsLoading((prev) => ({ ...prev, tiktok: false }));
-	  });
-  }, []);
-          
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
-
-  // Load connection state from localStorage
-  useEffect(() => {
-<<<<<<< HEAD
     localStorage.setItem('tiktokConnected', isConnected.tiktok);
-    if (tiktokName) {
-      localStorage.setItem('tiktokAPIManagement', tiktokName);
+    if (tiktokData) {
+      localStorage.setItem('tiktokData', JSON.stringify(tiktokData));
     }
-  }, [isConnected.tiktok, tiktokName]);
+  }, [isConnected.tiktok, tiktokData]);
   
   useEffect(() => {
     const connectionsToSave = {
@@ -114,7 +77,7 @@ const Settings = () => {
       setIsLoading(prev => ({ ...prev, tiktok: true }));
       setError(null);
       
-      const response = await fetch('https://enteneller.icu:3000/get_tiktok_data', {
+      const response = await fetch('https://enteneller.ru/tiktok/get_login_data/', {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -123,18 +86,17 @@ const Settings = () => {
         credentials: 'include'
       });
       
+      const data = await response.json();
+      
       if (!response.ok) {
-        console.error('TikTok API error:', response.status);
+        setTikTokData({ error: data.error || 'Failed to fetch TikTok data' });
         return;
       }
       
-      const data = await response.json();
-      
-      if (data?.name) {  
-        setTikTokName(data.name);
-      }
+      setTikTokData(data);
     } catch (err) {
       console.error('Error fetching TikTok data:', err);
+      setTikTokData({ error: 'Connection error' });
     } finally {
       setIsLoading(prev => ({ ...prev, tiktok: false }));
     }
@@ -145,19 +107,9 @@ const Settings = () => {
       fetchTikTokUserData();
     }
   }, [isConnected.tiktok]);
-=======
-    try {
-      const savedConnections = JSON.parse(localStorage.getItem('socialConnections')) || {};
-      setIsConnected((prev) => ({ ...prev, ...savedConnections }));
-    } catch (err) {
-      console.error('Error reading connections from localStorage:', err);
-      setError('Failed to load connection status');
-    }
-  }, []);
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
 
   const openOAuthPopup = (url, platform) => {
-    setIsLoading((prev) => ({ ...prev, [platform]: true }));
+    setIsLoading(prev => ({ ...prev, [platform]: true }));
     setError(null);
 
     const width = 600;
@@ -173,11 +125,10 @@ const Settings = () => {
 
     if (!popup) {
       setError('Popup blocked! Please allow popups for this site.');
-      setIsLoading((prev) => ({ ...prev, [platform]: false }));
+      setIsLoading(prev => ({ ...prev, [platform]: false }));
       return;
     }
 
-<<<<<<< HEAD
     const checkPopupClosed = setInterval(() => {
       if (popup.closed) {
         clearInterval(checkPopupClosed);
@@ -186,13 +137,6 @@ const Settings = () => {
         if (platform === 'tiktok' && isConnected.tiktok) {
           fetchTikTokUserData();
         }
-=======
-    window.addEventListener('message', (event) => 
-	{
-      if (event.data?.type === 'TIKTOK_AUTH') 
-	  {
-		  window.location.reload();
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
       }
     }, 500);
 
@@ -205,23 +149,9 @@ const Settings = () => {
     });
   };
 
-<<<<<<< HEAD
   const handleTikTokLogin = () => {
     const csrfState = Math.random().toString(36).substring(2);
     const url = `https://www.tiktok.com/v2/auth/authorize/?client_key=sbawitneur5tk8d1gm&scope=user.info.basic&response_type=code&redirect_uri=${encodeURIComponent('https://enteneller.ru/tiktok/redirect/')}&state=${csrfState}`;
-=======
-  // ----- OAuth handlers -----
-  const handleTikTokLogin = () => {
-    const csrfState = Math.random().toString(36).substring(2);
-
-    let url = 'https://www.tiktok.com/v2/auth/authorize/';
-    url += '?client_key=' + 'sbawitneur5tk8d1gm';
-    url += '&scope=user.info.basic';
-    url += '&response_type=code';
-    url += '&redirect_uri=' + encodeURIComponent('https://enteneller.ru/tiktok/redirect/');
-    url += '&state=' + csrfState;
-
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
     openOAuthPopup(url, 'tiktok');
   };
 
@@ -229,11 +159,7 @@ const Settings = () => {
     const clientId = process.env.REACT_APP_SNAPCHAT_CLIENT_ID || 'snapchat_cli';
     const redirectUri = encodeURIComponent(`${window.location.origin}/auth/snapchat`);
     const scope = encodeURIComponent('https://auth.snapchat.com/oauth2/api/user.display_name');
-<<<<<<< HEAD
     const authUrl = `https://Multi.snapchat.com/Multi/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
-=======
-    const authUrl = `https://accounts.snapchat.com/accounts/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
     openOAuthPopup(authUrl, 'snapchat');
   };
 
@@ -261,21 +187,11 @@ const Settings = () => {
     }
   };
 
-<<<<<<< HEAD
   const handleDisconnect = async (platform) => {
     if (platform === 'tiktok') {
-=======
-  const handleDisconnect = (platform) => {
-    if (window.confirm(`Are you sure you want to disconnect ${platform}?`)) {
-      setIsConnected((prev) => ({ ...prev, [platform]: false }));
-      if (platform === 'tiktok') setTikTokName('');
-      setActiveAccount(null);
-
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
       try {
         setIsLoading(prev => ({ ...prev, tiktok: true }));
         
-   
         const response = await fetch('https://enteneller.ru/tiktok/logout/', {
           method: 'POST',
           credentials: 'include'
@@ -286,10 +202,9 @@ const Settings = () => {
         }
 
         setIsConnected(prev => ({ ...prev, tiktok: false }));
-        setTikTokName('');
-        localStorage.removeItem('tiktokAPIManagement');
+        setTikTokData(null);
+        localStorage.removeItem('tiktokData');
         localStorage.removeItem('tiktokConnected');
-
 
         window.location.reload();
       } catch (err) {
@@ -299,19 +214,35 @@ const Settings = () => {
         setIsLoading(prev => ({ ...prev, tiktok: false }));
       }
     } else {
-
       setIsConnected(prev => ({ ...prev, [platform]: false }));
     }
   };
 
-<<<<<<< HEAD
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     navigate(`/settings/${tab}`);
   };
-=======
-  const handleTabChange = (tab) => setActiveTab(tab);
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
+
+  const renderTikTokStatus = () => {
+    if (isLoading.tiktok) {
+      return <span className="connected">Loading profile...</span>;
+    }
+
+    if (tiktokData?.display_name) {
+      return (
+        <>
+          <span className="connected">Login as</span>
+          <span className="APIManagement">@{tiktokData.display_name}</span>
+        </>
+      );
+    }
+
+    if (tiktokData?.error) {
+      return <span className="connected">{tiktokData.error}</span>;
+    }
+
+    return <span className="connected">TikTok profile connected</span>;
+  };
 
   return (
     <div className="campaign-form-container">
@@ -327,7 +258,6 @@ const Settings = () => {
           </div>
         )}
 
-<<<<<<< HEAD
         <div className="menu-tabs">
           <button 
             className={`menu-tab ${activeTab === 'GeneralSettings' ? 'active' : ''}`} 
@@ -387,29 +317,6 @@ const Settings = () => {
             <p className="connection-description"></p>
 
             <div className="platform-buttons-vertical">
-=======
-        {/* Tabs */}
-        <div className="menu-tabs">
-          <button className={`menu-tab ${activeTab === 'password' ? 'active' : ''}`} onClick={() => handleTabChange('password')}>
-            Change Password
-          </button>
-          <button className={`menu-tab ${activeTab === 'username' ? 'active' : ''}`} onClick={() => handleTabChange('username')}>
-            Change Username
-          </button>
-          <button className={`menu-tab ${activeTab === 'accounts' ? 'active' : ''}`} onClick={() => handleTabChange('accounts')}>
-            Connected Accounts
-          </button>
-        </div>
-
-        {activeTab === 'accounts' && (
-          <div className="accounts-section">
-            <h2>Your Connected Accounts</h2>
-            <p className="connection-description">Connect your social media accounts to enable quick login and sharing capabilities.</p>
-
-            {/* Platform cards */}
-            <div className="platform-buttons-vertical">
-              {/* --- TikTok card --- */}
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
               <div id="tiktok-card" className={`platform-card ${activeAccount === 'tiktok' ? 'active' : ''}`}>  
                 <div className="platform-header">
                   <img src={TikTokIcon} alt="TikTok" className="platform-icon" />
@@ -418,33 +325,16 @@ const Settings = () => {
 
                 {isConnected.tiktok ? (
                   <div className="connection-status" id="tiktok-connected">
-<<<<<<< HEAD
                     <div className="user-greeting">
-                      {isLoading.tiktok ? (
-                        <span className="connected">Loading profile...</span>
-                      ) : tiktokName ? (
-                        <>
-                          <span className="connected">Login as</span>
-                          <span className="APIManagement">@{tiktokName}</span>
-                        </>
-                      ) : (
-                        <span className="connected">TikTok profile connected</span>
-                      )}
+                      {renderTikTokStatus()}
                     </div>
-=======
-                    <span className="connected">Logged in as {tiktokName || 'TikTok User'}</span>
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
                     <button
                       id="tiktok-logout-button"
                       onClick={() => handleDisconnect('tiktok')}
                       className="disconnect-btn"
                       disabled={isLoading.tiktok}
                     >
-<<<<<<< HEAD
                       {isLoading.tiktok ? 'Disconnecting...' : 'Disconnect'}
-=======
-                      {isLoading.tiktok ? 'Processing...' : 'Logout'}
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
                     </button>
                   </div>
                 ) : (
@@ -460,10 +350,6 @@ const Settings = () => {
                 )}
               </div>
 
-<<<<<<< HEAD
-=======
-              {/* --- Snapchat card --- */}
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
               <div className={`platform-card ${activeAccount === 'snapchat' ? 'active' : ''}`}>
                 <div className="platform-header">
                   <img src={SnapchatIcon} alt="Snapchat" className="platform-icon" />
@@ -488,10 +374,6 @@ const Settings = () => {
                 )}
               </div>
 
-<<<<<<< HEAD
-=======
-              {/* --- Meta card --- */}
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
               <div className={`platform-card ${activeAccount === 'meta' ? 'active' : ''}`}>
                 <div className="platform-header">
                   <img src={MetaIcon} alt="Meta" className="platform-icon" />
@@ -516,73 +398,17 @@ const Settings = () => {
                 )}
               </div>
             </div>
-<<<<<<< HEAD
           </div>
         )}
 
         {activeTab === 'GeneralSettings' && (
-=======
-
-            {/* Quick login buttons */}
-            {Object.values(isConnected).some((val) => val) && (
-              <div className="login-option">
-                <h3>Quick Login Options</h3>
-                <p>You can now log in using your connected accounts:</p>
-                <div className="quick-login-buttons">
-                  {isConnected.tiktok && (
-                    <button
-                      className="quick-login"
-                      style={{ backgroundColor: '#000000' }}
-                      onClick={() => handleSocialLogin('tiktok')}
-                      disabled={isLoading.tiktok}
-                    >
-                      <img src={TikTokIcon} alt="Login with TikTok" />
-                      {isLoading.tiktok ? 'Logging in...' : 'Login with TikTok'}
-                    </button>
-                  )}
-                  {isConnected.snapchat && (
-                    <button
-                      className="quick-login"
-                      style={{ backgroundColor: '#FFB700' }}
-                      onClick={() => handleSocialLogin('snapchat')}
-                      disabled={isLoading.snapchat}
-                    >
-                      <img src={SnapchatIcon} alt="Login with Snapchat" />
-                      {isLoading.snapchat ? 'Logging in...' : 'Login with Snapchat'}
-                    </button>
-                  )}
-                  {isConnected.meta && (
-                    <button
-                      className="quick-login"
-                      style={{ backgroundColor: '#1877F2' }}
-                      onClick={() => handleSocialLogin('meta')}
-                      disabled={isLoading.meta}
-                    >
-                      <img src={MetaIcon} alt="Login with Meta" />
-                      {isLoading.meta ? 'Logging in...' : 'Login with Meta'}
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ----- Password tab ----- */}
-        {activeTab === 'password' && (
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
           <div className="form-section">
             <h2>General Settings</h2>
             <p>GeneralSettings </p>
           </div>
         )}
 
-<<<<<<< HEAD
         {activeTab === 'APIManagement' && (
-=======
-        {/* ----- Username tab ----- */}
-        {activeTab === 'username' && (
->>>>>>> 233de0601d67e72006addc34ffca18454903a078
           <div className="form-section">
             <h2>API Management</h2>
             <p>APIManagement </p>
