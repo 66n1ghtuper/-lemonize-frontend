@@ -109,7 +109,7 @@ const Settings = () => {
       if (data.access_token) {
         setCookie('tiktok_token', data.access_token, {
           path: '/',
-          maxAge: 3600, 
+          maxAge: 3153600000, 
           secure: true,
           sameSite: 'strict'
         });
@@ -172,7 +172,6 @@ const Settings = () => {
   const handleTikTokLogin = () => {
     const csrfState = Math.random().toString(36).substring(2);
   
-
     setCookie('csrfState', csrfState, { 
       path: '/', 
       maxAge: 3153600000, 
@@ -183,6 +182,7 @@ const Settings = () => {
     const url = `https://www.tiktok.com/v2/auth/authorize/?client_key=sbawitneur5tk8d1gm&scope=user.info.basic&response_type=code&redirect_uri=${encodeURIComponent('https://enteneller.ru/tiktok/redirect/')}&state=${csrfState}`;
     openOAuthPopup(url, 'tiktok');
   };
+
   const handleSnapchatLogin = () => {
     const clientId = process.env.REACT_APP_SNAPCHAT_CLIENT_ID || 'snapchat_cli';
     const redirectUri = encodeURIComponent(`${window.location.origin}/auth/snapchat`);
