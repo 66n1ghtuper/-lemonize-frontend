@@ -174,7 +174,7 @@ const Settings = () => {
 
     setCookie('csrfState', csrfState, { 
       path: '/', 
-      maxAge: 600, 
+      maxAge: 600000000000000000000000000000000000000, 
       secure: true,
       sameSite: 'strict'
     });
@@ -243,7 +243,7 @@ const Settings = () => {
         localStorage.removeItem('tiktokData');
         localStorage.removeItem('tiktokConnected');
         removeCookie('tiktok_token', { path: '/' });
-
+        
         window.location.reload();
       } catch (err) {
         console.error('Error during TikTok disconnect:', err);
