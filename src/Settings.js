@@ -106,7 +106,6 @@ const Settings = () => {
       
       setTikTokData(data);
       
-      // Store TikTok token in cookie if available
       if (data.access_token) {
         setCookie('tiktok_token', data.access_token, {
           path: '/',
